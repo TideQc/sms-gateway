@@ -421,21 +421,10 @@ cardio_plein_air_smsgateway/
 └── docs/                        # Documentation
     ├── AUTH_QUICK_START.md      # Guide authentification rapide
     ├── AUTHENTICATION_GUIDE.md  # Guide complet sécurité
-    ├── CHECKLIST.md             # Checklist complète
-    ├── DEVELOPMENT_CHECKLIST.md # Checklist développement
-    ├── EXAMPLE_USERS.sql        # Exemples utilisateurs
-    ├── FICHIERS_CREES.md        # Inventaire fichiers créés
-    ├── GUIDE_UTILISATION.md     # Guide d'utilisation
-    ├── MIGRATION_GUIDE.md       # Guide de migration
-    ├── PIXEL_SMS_SYNC_GUIDE.md  # Synchronisation Pixel
-    ├── PIXEL_SMS_API_SIMPLIFIED.md
-    ├── PIXEL_SMS_QUICK_START.md
-    ├── README_AUTH.md           # Index documentation auth
-    ├── REFACTORING_SUMMARY.md   # Résumé refactorisation
     ├── SETUP_AUTHENTICATION.md  # Setup technique auth
-    ├── SUMMARY.md               # Résumé global
-    ├── UNREAD_SMS_GUIDE.md      # Guide SMS non lus
-    └── VISUAL_SETUP_GUIDE.md    # Instructions visuelles
+    ├── PIXEL_SMS_SYNC_GUIDE.md  # Synchronisation SMS Android
+    ├── GUIDE_UTILISATION.md     # Guide d'utilisation
+    └── EXAMPLE_USERS.sql        # Scripts SQL exemples
 ```
 
 ---
@@ -472,16 +461,14 @@ cardio_plein_air_smsgateway/
 
 ### Guides Disponibles
 
-| Document | Description | Temps de lecture |
-|----------|-------------|------------------|
-| [AUTH_QUICK_START.md](docs/AUTH_QUICK_START.md) | Setup authentification en 5 min | 5 min |
-| [AUTHENTICATION_GUIDE.md](docs/AUTHENTICATION_GUIDE.md) | Guide complet sécurité | 30 min |
-| [VISUAL_SETUP_GUIDE.md](docs/VISUAL_SETUP_GUIDE.md) | Instructions avec diagrammes | 10 min |
-| [PIXEL_SMS_SYNC_GUIDE.md](docs/PIXEL_SMS_SYNC_GUIDE.md) | Configuration synchronisation | 15 min |
-| [MIGRATION_GUIDE.md](docs/MIGRATION_GUIDE.md) | Mise à jour et migration | 20 min |
-| [EXAMPLE_USERS.sql](docs/EXAMPLE_USERS.sql) | Scripts SQL utilisateurs | - |
-| [GUIDE_UTILISATION.md](docs/GUIDE_UTILISATION.md) | Guide d'utilisation complet | 20 min |
-| [SUMMARY.md](docs/SUMMARY.md) | Résumé du projet | 10 min |
+| Document | Description |
+|----------|-------------|
+| [AUTH_QUICK_START.md](docs/AUTH_QUICK_START.md) | Guide rapide de configuration de l'authentification |
+| [AUTHENTICATION_GUIDE.md](docs/AUTHENTICATION_GUIDE.md) | Guide complet sur la sécurité et JWT |
+| [SETUP_AUTHENTICATION.md](docs/SETUP_AUTHENTICATION.md) | Instructions techniques détaillées pour l'auth |
+| [PIXEL_SMS_SYNC_GUIDE.md](docs/PIXEL_SMS_SYNC_GUIDE.md) | Configuration de la synchronisation SMS Android |
+| [GUIDE_UTILISATION.md](docs/GUIDE_UTILISATION.md) | Guide d'utilisation de l'application |
+| [EXAMPLE_USERS.sql](docs/EXAMPLE_USERS.sql) | Scripts SQL pour créer des utilisateurs |
 
 ### Architecture Frontend
 
