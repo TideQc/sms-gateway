@@ -39,7 +39,7 @@
 - 🔔 Recevoir des notifications en temps réel
 - 📥 Importer des listes de participants via Excel
 
-L'application utilise un téléphone Android (Pixel 2) comme passerelle SMS physique via l'application SMS Gateway.
+L'application utilise un téléphone Android comme passerelle SMS physique via l'application SMS Gateway.
 
 ---
 
@@ -66,15 +66,15 @@ L'application utilise un téléphone Android (Pixel 2) comme passerelle SMS phys
 - **Gestion des non-lus** : marquer comme lu/non lu
 - **Archives** : historique de tous les envois
 
-### 🔄 Synchronisation Pixel
-- Connexion automatique au Pixel 2 via API
+### 🔄 Synchronisation Android
+- Connexion automatique au téléphone via API
 - Synchronisation des SMS reçus
 - Matching intelligent avec les participants
 - Gestion des SMS orphelins (numéros inconnus)
 - Détection automatique des endpoints API
 
 ### 📊 Monitoring
-- Statut de connexion Pixel en temps réel
+- Statut de connexion téléphone en temps réel
 - Barre de progression pour envois de masse
 - Logs structurés JSON (backend)
 - Dashboard avec statistiques
@@ -103,13 +103,13 @@ L'application utilise un téléphone Android (Pixel 2) comme passerelle SMS phys
 │  • API RESTful (19 endpoints protégés)                      │
 │  • Authentification JWT                                     │
 │  • Socket.IO Server                                         │
-│  • Service de synchronisation Pixel                         │
+│  • Service de synchronisation SMS Android                   │
 └─────────┬───────────────────────────┬───────────────────────┘
           │                           │
           │ MySQL (3306)              │ HTTP API (8080)
           ↓                           ↓
 ┌──────────────────────┐    ┌─────────────────────────────────┐
-│  MariaDB 10.11       │    │  PIXEL 2 (Android)              │
+│  MariaDB 10.11       │    │  TÉLÉPHONE ANDROID              │
 │  • Participants      │    │  • SMS Gateway App              │
 │  • ReceivedSMS       │    │  • Envoi/Réception SMS          │
 │  • SentMessages      │    │  • API HTTP Locale              │
@@ -127,7 +127,7 @@ L'application utilise un téléphone Android (Pixel 2) comme passerelle SMS phys
 - **JWT** - Authentification sécurisée
 - **Bcrypt** - Hachage de mots de passe
 - **MySQL2** - Connexion base de données
-- **Axios** - Requêtes HTTP vers Pixel
+- **Axios** - Requêtes HTTP vers téléphone Android
 - **Multer** - Upload de fichiers
 - **XLSX** - Lecture de fichiers Excel
 
@@ -145,7 +145,7 @@ L'application utilise un téléphone Android (Pixel 2) comme passerelle SMS phys
 - **MariaDB 10.11** - Base de données relationnelle
 
 ### Téléphone
-- **Android** (Pixel 2)
+- **Android** (compatible avec la plupart des appareils)
 - **SMS Gateway App** - Passerelle SMS physique
 
 ---
@@ -156,7 +156,7 @@ L'application utilise un téléphone Android (Pixel 2) comme passerelle SMS phys
 
 - Docker & Docker Compose
 - Téléphone Android avec SMS Gateway installé
-- Réseau local (backend et Pixel sur même réseau)
+- Réseau local (backend et téléphone sur même réseau)
 
 ### Étapes
 
@@ -182,7 +182,7 @@ DB_NAME=sms_gateway
 # JWT
 JWT_SECRET=votre-secret-securise-ici
 
-# Pixel 2 (SMS Gateway)
+# Téléphone Android (SMS Gateway)
 PIXEL_IP=192.168.1.100
 PIXEL_PORT=8080
 PIXEL_USER=admin
@@ -222,15 +222,15 @@ http://localhost:4444
 
 ## ⚙️ Configuration
 
-### Configuration du Pixel 2
+### Configuration du Téléphone Android
 
 1. Installer **SMS Gateway** depuis le Play Store
 2. Ouvrir l'application et configurer :
    - Port : `8080`
    - Authentification : Basic Auth
    - Créer un utilisateur/mot de passe
-3. Obtenir l'adresse IP locale du Pixel (Paramètres → À propos)
-4. S'assurer que le Pixel est sur le même réseau que le serveur
+3. Obtenir l'adresse IP locale du téléphone (Paramètres → À propos)
+4. S'assurer que le téléphone est sur le même réseau que le serveur
 
 ### Configuration Nginx (Production)
 
@@ -287,7 +287,7 @@ frontend:
 ### Réception de SMS
 
 **Synchronisation manuelle :**
-1. Cliquer sur "Sync Pixel"
+1. Cliquer sur "Synchroniser"
 2. Les nouveaux SMS apparaissent avec notification
 3. Un badge indique le nombre de non-lus
 
@@ -337,11 +337,11 @@ Authorization: Bearer <votre_token_jwt>
 | `POST` | `/mark-conversation-read` | Marquer conversation lue |
 | `GET` | `/sent-messages-archive` | Archives des envois |
 
-#### Synchronisation Pixel
+#### Synchronisation Android
 
 | Méthode | Route | Description |
 |---------|-------|-------------|
-| `GET` | `/pixel/device-status` | État du Pixel 2 |
+| `GET` | `/pixel/device-status` | État du téléphone Android |
 | `POST` | `/pixel/sync-sms` | Synchroniser tous les SMS |
 | `POST` | `/pixel/sync-unread-only` | Sync SMS non lus |
 | `POST` | `/pixel/incoming` | Webhook SMS entrants (public) |
@@ -351,7 +351,7 @@ Authorization: Bearer <votre_token_jwt>
 | Méthode | Route | Description |
 |---------|-------|-------------|
 | `GET` | `/send-status` | Progression envoi de masse |
-| `GET` | `/pixel-status` | État connexion Pixel |
+| `GET` | `/pixel-status` | État connexion téléphone |
 
 ### Exemple de Requête
 
@@ -604,7 +604,7 @@ server {
 
 ## 🐛 Dépannage
 
-### Le Pixel n'est pas accessible
+### Le téléphone Android n'est pas accessible
 
 ```bash
 # Vérifier la connectivité
