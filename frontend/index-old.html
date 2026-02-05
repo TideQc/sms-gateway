@@ -1,0 +1,2586 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>SMS Gateway - Cardio Plein Air</title>
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/dataTables.bootstrap5.css" rel="stylesheet">
+    <style>
+        /* Styled checkboxes - ALL MODES - must be first */
+        input[type="checkbox"],
+        input[type="checkbox"].user-check,
+        .form-check-input {
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            width: 20px !important;
+            height: 20px !important;
+            border: 2px solid #31a651 !important;
+            border-radius: 4px !important;
+            background-color: transparent !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            position: relative !important;
+        }
+        
+        input[type="checkbox"]:hover,
+        input[type="checkbox"].user-check:hover,
+        .form-check-input:hover {
+            border-color: #288a43 !important;
+            box-shadow: 0 0 8px rgba(49, 166, 81, 0.3) !important;
+        }
+        
+        input[type="checkbox"]:checked,
+        input[type="checkbox"].user-check:checked,
+        .form-check-input:checked {
+            background-color: #31a651 !important;
+            border-color: #31a651 !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%230a0a0a'%3E%3Cpath d='M12.207 4.793a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L6.5 9.086l4.293-4.293a1 1 0 0 1 1.414 0z'/%3E%3C/svg%3E") !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            background-size: 14px !important;
+        }
+        
+        input[type="checkbox"]:checked:hover,
+        input[type="checkbox"].user-check:checked:hover,
+        .form-check-input:checked:hover {
+            background-color: #288a43 !important;
+            border-color: #288a43 !important;
+            box-shadow: 0 0 12px rgba(49, 166, 81, 0.5) !important;
+        }
+        
+        input[type="checkbox"]:focus,
+        input[type="checkbox"].user-check:focus,
+        .form-check-input:focus {
+            outline: none !important;
+            box-shadow: 0 0 0 3px rgba(49, 166, 81, 0.15) !important;
+        }
+        
+        * { box-sizing: border-box; }
+        
+        html { height: 100vh; overflow: hidden; }
+        body { height: 100vh; margin: 0; padding: 0; overflow: hidden; background-color: #0a0a0a; color: #e0e0e0; font-family: "Montserrat",Helvetica,Arial,sans-serif; }
+        
+        .tab-content { height: 100%; overflow: hidden; position: relative; }
+        
+        .tab-pane { height: 100%; display: flex; flex-direction: column; position: relative; }
+        
+        .tab-pane:not(.active) { display: none !important; visibility: hidden; pointer-events: none; }
+        
+        #mass-panel { height: 100%; display: flex; flex-direction: column; }
+        
+        #mass-panel > .tab-content { height: calc(100% - 70px); padding: 5px }
+        
+        #tabsContainer { margin-bottom: 0; }
+        
+        /* Card avec tableau scrollable */
+        #db-panel .card { 
+            background-color: #151515; 
+            border: 1px solid #222; 
+            border-radius: 12px; 
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            flex: 1;
+        }
+        
+        #db-panel .card .d-flex.align-items-center.justify-content-between,
+        #db-panel .card #customSearch {
+            flex-shrink: 0;
+        }
+        
+        #db-panel .card #filtersContainer {
+            position: absolute;
+            top: 0;
+            left: 15px;
+            right: 15px;
+            max-height: calc(100vh - 150px);
+            overflow-y: auto;
+            background-color: #151515;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 65px 15px 15px;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+        
+        #db-panel .card .dataTables_wrapper {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #db-panel .card .dataTables_scroll {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+        
+        #db-panel .card .dataTables_scrollBody {
+            max-height: none !important;
+        }
+        
+        #db-panel .card .dataTables_info,
+        #db-panel .card .dataTables_paginate {
+            flex-shrink: 0;
+            margin-top: 10px;
+            padding-bottom: 10px;
+        }
+        
+        /* Card pour Saisie Manuelle */
+        #manual-panel .card {
+            background-color: #151515; 
+            border: 1px solid #222; 
+            border-radius: 12px; 
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            flex: 1;
+        }
+        
+        #manual-panel .card label,
+        #manual-panel .card #manualNumbers {
+            flex-shrink: 0;
+        }
+        
+        #manual-panel .card #manualStatus {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        /* Card pour SMS */
+        #sms-panel > .card {
+            background-color: #151515; 
+            border: 1px solid #222; 
+            border-radius: 12px; 
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            flex: 1;
+        }
+        
+        #sms-panel > .card #archiveSearch {
+            flex-shrink: 0;
+        }
+        
+        #sms-panel > .card #archiveContactsList {
+            flex: 1;
+            overflow-y: visible;
+            max-height: none !important;
+            min-height: 0;
+            padding-bottom: 90px;
+        }
+        
+        /* Messages container height flexible */
+        #archiveContactsList .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #archiveContactsList div[id^="messages-"] {
+            flex: 1;
+            overflow-y: auto;
+            max-height: calc(100vh - 375px) !important;
+        }
+        
+        .card { background-color: #151515; border: 1px solid #222; border-radius: 12px; overflow: hidden; }
+        .card-header { background-color: #1a1a1a; border-bottom: 1px solid #222; color: #31a651; font-weight: bold; border-radius: 0; transition: background-color 0.5s ease; }
+        .form-control { background-color: #1a1a1a; border: 1px solid #333; color: #fff; }
+        .form-control::placeholder { color: #aaa !important; }
+        .form-control:focus { background-color: #222; border-color: #31a651; color: #fff; box-shadow: 0 0 0 0.25rem rgba(49, 166, 81, 0.25); }
+        .form-label { color: #d0d0d0; font-weight: 500; }
+        .btn-primary { background-color: #31a651; border-color: #31a651; font-weight: 600; color: #0a0a0a; }
+        .btn-primary:hover { background-color: #288a43; border-color: #288a43; color: #fff; }
+        .nav-link { color: #888 !important; border: none !important; position: relative; transition: color 0.3s ease; }
+        .nav-link::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 3px; background-color: #31a651; transition: width 0.3s ease; }
+        .nav-link:hover::after { width: 100%; }
+        .nav-link.active { background-color: transparent !important; color: #31a651 !important; border-bottom: none !important; }
+        .nav-link.active::after { width: 100%; }
+        .table { color: #e0e0e0 !important; border-color: #222 !important; --bs-table-bg: transparent; }
+        thead th { color: #31a651 !important; background-color: #1a1a1a !important; border-bottom: 2px solid #31a651 !important; font-size: 0.9rem; }
+        .table tbody td { background-color: transparent !important; color: #e0e0e0 !important; border-bottom: 1px solid #222 !important; vertical-align: middle; }
+        .font-monospace.text-success { color: #31a651 !important; }
+        .table tbody td.phone-number { color: #31a651 !important; }
+        .table-hover tbody tr:hover td { background-color: #1a1a1a !important; color: #ffffff !important; }
+        .pagination .page-link { background-color: #1a1a1a; border-color: #333; color: #31a651; }
+        .pagination .page-item.active .page-link { background-color: #31a651; border-color: #31a651; color: #0a0a0a !important; }
+        .progress { background-color: #1a1a1a; height: 12px; border-radius: 6px; }
+        .progress-bar { background-color: #31a651; }
+        #manualStatus { background: #101010; font-family: monospace; font-size: 0.85rem; border: 1px solid #222; color: #eee; }
+        #customSearch::placeholder, #smsBody::placeholder, #manualNumbers::placeholder { color: #aaa; }
+        
+        /* Bouton Historique Floating */
+        /* Filtres */
+        .filter-btn { border-color: #31a651 !important; color: #31a651 !important; border-radius: 20px; font-size: 0.75rem; padding: 3px 12px; }
+        .filter-btn.active { background-color: #31a651 !important; color: #121212 !important; }
+        .filter-label { color: #31a651; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display: block; }
+        
+        /* DataTables - Flèches de tri à droite */
+        thead th.dt-orderable::before { content: ''; }
+        #participantsTable_info { color: #888 !important; }
+        
+        /* Forcer l'alignement du texte à gauche dans tous les headers pour les flèches à droite */
+        #participantsTable thead th { text-align: left !important; }
+
+        /* Rows sélectionnées */
+        tbody tr.selected { background-color: #1a3a1a !important; }
+        tbody tr.selected:hover { background-color: #1f4620 !important; }
+        tbody tr { cursor: pointer; }
+        table.table.dataTable > tbody > tr.selected > * {
+            box-shadow: inset 0 0 0 9999px #1f4620 !important;
+        }
+
+        /* Override Bootstrap table colors */
+        .table-success { background-color: #1a3a1a !important; }
+        .table-success td { background-color: #1a3a1a !important; color: #31a651 !important; }
+        .table-danger { background-color: #3a1a1a !important; }
+        .table-danger td { background-color: #3a1a1a !important; color: #dc3545 !important; }
+
+        /* Modal */
+        .modal-content { background-color: #1e1e1e; border: 1px solid #444; }
+        .modal-title { color: #fff; }
+        #historyTitle { color: #31a651; font-weight: bold; }
+        .text-secondary, .manualTitle { color: #31a651 !important; }
+        .text-muted { color: #999 !important; }
+        
+        /* SMS Non lus */
+        .sms-unread-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #ff4444, #ff8844);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 4px;
+            animation: pulse-unread 2s infinite;
+            box-shadow: 0 0 10px rgba(255, 68, 68, 0.6);
+        }
+        
+        @keyframes pulse-unread {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        .sms-unread-icon { font-size: 1rem; }
+        
+        /* SMS Reçus - Card Styling */
+        .sms-message-card {
+            background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
+            border-left: 4px solid #ff8844;
+            padding: 14px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(255, 136, 68, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .sms-message-card:hover {
+            border-left-color: #ff4444;
+            box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3);
+            transform: translateX(4px);
+        }
+        
+        .sms-message-card.read {
+            border-left-color: #31a651;
+            opacity: 0.7;
+        }
+        
+        .sms-sender { color: #ff8844; font-weight: bold; font-size: 0.95rem; }
+        .sms-message-text { color: #e0e0e0; margin: 8px 0; line-height: 1.5; font-size: 0.95rem; }
+        .sms-date { color: #888; font-size: 0.8rem; }
+        .sms-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        #receivedSMSList { overflow: hidden; }
+        .sms-actions .btn-sm { padding: 4px 8px; font-size: 0.8rem; }
+        
+        /* RESPONSIVE & MOBILE STYLES */
+        
+        /* Tablet & Small Screens (MD breakpoint: 768px) */
+        @media (max-width: 991.98px) {
+            .container-fluid { padding: 15px; }
+            
+            h2 { font-size: 1.5rem; }
+            
+            .card { margin-bottom: 15px; }
+            
+            .card.sticky-top { position: static !important; }
+            
+            .nav-tabs { flex-wrap: wrap; }
+            
+            .table { font-size: 0.85rem; }
+            
+            thead th { font-size: 0.75rem; padding: 8px 4px !important; }
+            
+            .table tbody td { padding: 6px 4px !important; font-size: 0.85rem; }
+            
+            .btn { font-size: 0.9rem; padding: 0.4rem 0.8rem !important; }
+            
+            .badge { font-size: 0.7rem; padding: 3px 6px !important; }
+            
+            
+            #btnCompose { font-size: 0.85rem; padding: 0.5rem 1rem !important; }
+        }
+        
+        /* Mobile Phones (under 768px) */
+        @media (max-width: 767.98px) {
+            .container-fluid { padding: 10px; }
+            
+            .d-flex.align-items-center.mb-4 { flex-direction: row !important; align-items: center !important; flex-wrap: nowrap !important; }
+            
+            img[alt="Logo"] { height: 28px !important; margin-right: 10px !important; }
+            
+            h2 { font-size: 1.2rem; margin-bottom: 0 !important; }
+            
+            .row { margin-left: -5px; margin-right: -5px; }
+            
+            .col-md-4, .col-md-8 { padding: 5px; }
+            
+            /* Stacked layout on mobile */
+            .col-md-4 { max-width: 100%; flex-basis: 100%; }
+            .col-md-8 { max-width: 100%; flex-basis: 100%; }
+            
+            /* Ajuster la hauteur du tab-content sur mobile */
+            .tab-content { height: auto; overflow-y: auto; }
+            
+            /* Card adjustments for mobile */
+            .card { background-color: #151515; border: 1px solid #222; border-radius: 8px; margin-bottom: 12px; }
+            
+            #db-panel .card {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
+            
+            #db-panel .card > * {
+                flex-shrink: 0;
+            }
+            
+            #db-panel .card .dataTables_wrapper {
+                flex: 1 !important;
+                overflow: hidden !important;
+                display: flex !important;
+                flex-direction: column !important;
+                min-height: 0 !important;
+            }
+            
+            #db-panel .card .dataTables_scroll {
+                flex: 1 !important;
+                height: auto !important;
+                overflow-y: auto !important;
+                min-height: 0 !important;
+            }
+            
+            .card-header { padding: 12px 14px; font-size: 1.1rem; }
+            
+            /* Réduire la taille des boutons Filtres et Importer Excel en mobile */
+            #toggleFilters, #uploadExcelBtn {
+                font-size: 0.6rem;
+                padding: 0.3rem 0.5rem;
+                white-space: nowrap;
+                min-width: auto;
+                flex-shrink: 1;
+            }
+            
+            /* Réduire la colonne des boutons */
+            .d-flex.flex-column.gap-2 {
+                flex-direction: row !important;
+                gap: 0.25rem !important;
+                align-items: center;
+            }
+            
+            #activeFiltersTags {
+                flex-basis: 100%;
+                margin-top: 0.25rem;
+            }
+            
+            /* Fix compose modal centering on 575px-767px screens */
+            @media (min-width: 575px) and (max-width: 767.98px) {
+                #composeModal .modal-dialog {
+                    margin-left: auto !important;
+                    margin-right: auto !important;
+                }
+            }
+            
+            textarea { font-size: 18px !important; line-height: 1.5; } /* Prevent zoom on iOS */
+            
+            #smsBody { height: 140px !important; }
+            
+            #manualNumbers { height: 140px !important; }
+            
+            /* Augmenter la visibilité du textarea dans les conversations */
+            [id^="reply-"] { min-height: 60px !important; max-height: 120px !important; }
+            
+            .form-control { font-size: 18px !important; padding: 12px; line-height: 1.5; }
+            
+            .btn { width: 100%; font-size: 1.1rem; padding: 0.75rem !important; margin-bottom: 10px; }
+            
+            .btn-sm { padding: 0.5rem 0.8rem !important; font-size: 0.95rem; }
+            
+            .btn-outline-success { font-size: 0.95rem; }
+            
+            .nav-tabs { border-bottom: 2px solid #222; gap: 0; }
+            
+            .nav-link { padding: 0.8rem !important; font-size: 1rem; border-radius: 0; }
+            
+            .nav-item { flex: 1; text-align: center; }
+            
+            .table { font-size: 0.95rem; }
+            
+            thead th { font-size: 0.9rem; padding: 10px 6px !important; text-align: center; }
+            
+            .table tbody td { padding: 8px 6px !important; font-size: 0.95rem; }
+            
+            .table tbody td strong { display: block; font-size: 1rem; }
+            
+            .badge { font-size: 0.85rem; padding: 4px 8px !important; }
+            
+            small { font-size: 0.9rem !important; }
+            
+            /* Hide some columns on very small screens */
+            .table th:nth-child(4), 
+            .table td:nth-child(4),
+            .table th:nth-child(5),
+            .table td:nth-child(5),
+            .table th:nth-child(6),
+            .table td:nth-child(6),
+            .table th:nth-child(7),
+            .table td:nth-child(7),
+            .table th:nth-child(8),
+            .table td:nth-child(8) {
+                display: none !important;
+                width: 0 !important;
+                padding: 0 !important;
+                border: 0 !important;
+            }
+            
+            /* Force table to use only visible columns width */
+            @media (max-width: 767.98px) {
+                .table th:nth-child(1),
+                .table td:nth-child(1) {
+                    width: 50px !important;
+                }
+                
+                .table th:nth-child(2),
+                .table td:nth-child(2) {
+                    width: auto !important;
+                    min-width: 120px;
+                }
+                
+                .table th:nth-child(3),
+                .table td:nth-child(3) {
+                    width: auto !important;
+                    min-width: 100px;
+                }
+            }
+            
+            #filtersContainer { margin-bottom: 15px; }
+            
+            .filter-btn { font-size: 0.9rem; padding: 4px 12px; margin: 3px 3px; }
+            
+            .filter-label { font-size: 0.9rem; }
+            
+            #toggleFilters { font-size: 0.95rem; }
+            
+            .d-flex.align-items-center.justify-content-between { flex-wrap: wrap; gap: 10px; }
+            
+            h5 { font-size: 1.2rem; margin-bottom: 10px !important; }
+            
+            .progress { height: 12px; }
+            
+            /* Datatable on mobile - respect parent height */
+            #db-panel .card .dataTables_scroll {
+                height: 100% !important;
+                max-height: none !important;
+            }
+            
+            /* Pagination mobile */
+            #db-panel .card .dataTables_paginate {
+                margin-top: 15px;
+                padding: 10px 0;
+                border-top: 1px solid #222;
+            }
+            
+            #db-panel .card .dataTables_info {
+                margin-top: 10px;
+                font-size: 0.85rem;
+            }
+            
+            .pagination {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .pagination .page-item {
+                margin: 2px;
+            }
+            
+            .pagination .page-link {
+                padding: 6px 10px;
+                font-size: 0.85rem;
+            }
+            
+            
+            #btnCompose { 
+                font-size: 0.9rem; 
+                padding: 0.6rem 1rem !important; 
+                border-radius: 50px;
+                white-space: nowrap;
+            }
+            
+            /* Fix reply bar on mobile */
+            @media (max-width: 767.98px) {
+                .d-flex.gap-2.align-items-stretch {
+                    display: flex !important;
+                    gap: 6px !important;
+                    padding: 6px !important;
+                    border-radius: 20px;
+                    background-color: #222;
+                    align-items: center !important;
+                    flex-wrap: nowrap !important;
+                }
+                
+                .d-flex.gap-2.align-items-stretch button {
+                    border-radius: 16px !important;
+                    padding: 6px 8px !important;
+                    min-width: 36px !important;
+                    width: 36px !important;
+                    height: 36px !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    flex-shrink: 0 !important;
+                }
+                
+                .d-flex.gap-2.align-items-stretch textarea {
+                    border-radius: 16px !important;
+                    padding: 8px 10px !important;
+                    flex: 1 1 auto !important;
+                    max-height: 50px !important;
+                    min-height: 36px !important;
+                    resize: none !important;
+                    font-size: 0.9rem;
+                    line-height: 1.3;
+                    margin: 0 !important;
+                }
+            }
+            
+            .modal-dialog { margin: 10px; }
+            
+            .modal-content { border-radius: 8px; }
+            
+            .modal-header { padding: 14px; }
+            
+            .modal-title { font-size: 1.2rem; }
+            
+            .modal-body { padding: 0; max-height: 70vh; overflow-y: auto; }
+            
+            .modal-body .table { font-size: 1rem; }
+            
+            .modal-body .table th, .modal-body .table td { padding: 10px 8px !important; }
+            
+            .btn-close { width: 1.8rem; height: 1.8rem; }
+            
+            #manualStatus { font-size: 0.95rem; }
+            
+            /* Improve touch targets */
+            input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; }
+            
+            .user-check { margin: 0 8px; }
+            
+            /* Reply bar styling for SMS */
+            .d-flex.gap-2.align-items-stretch {
+                border-radius: 20px;
+                background-color: #222;
+                padding: 8px;
+                align-items: center !important;
+            }
+            
+            /* Sticky reply container */
+            div[style*="padding: 15px; background-color: #1a1a1a; border-top: 1px solid #222;"] {
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                z-index: 50 !important;
+                background-color: #1a1a1a !important;
+                padding: 15px !important;
+                border-top: 1px solid #222 !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            
+            .d-flex.gap-2.align-items-stretch button {
+                border-radius: 16px !important;
+                padding: 8px 10px !important;
+                min-width: 40px !important;
+                height: 40px !important;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            
+            .d-flex.gap-2.align-items-stretch textarea {
+                border-radius: 16px !important;
+                padding: 10px 12px !important;
+                flex: 1 !important;
+                max-height: 60px !important;
+                min-height: 40px !important;
+                resize: none !important;
+                font-size: 0.95rem;
+                line-height: 1.4;
+            }
+
+            /* Emoji picker overlay */
+            [id^="emoji-picker-"] {
+                position: fixed;
+                bottom: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: min(420px, calc(100% - 24px));
+                max-height: 260px;
+                overflow-y: auto;
+                background-color: #222;
+                border: 1px solid #333;
+                border-radius: 12px;
+                padding: 12px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+                z-index: 3002;
+                display: none;
+                pointer-events: auto;
+            }
+
+            [id^="emoji-picker-"] > div {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            [id^="emoji-picker-"] button {
+                flex: 0 0 calc((100% - 7*6px)/8);
+                max-width: calc((100% - 7*6px)/8);
+                justify-content: center;
+                align-items: center;
+                padding: 6px 0 !important;
+            }
+
+            [id^="emoji-picker-"] .emoji-picker-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 8px;
+                color: #e0e0e0;
+                font-weight: 600;
+            }
+
+            #emojiPickerBackdrop {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.4);
+                z-index: 1;
+                display: none;
+            }
+            
+            /* Small landscape orientation */
+            @media (max-height: 500px) {
+                h2 { font-size: 1.2rem; }
+                .card-body { padding: 10px; }
+                #smsBody, #manualNumbers { height: 100px !important; }
+                .table { font-size: 0.85rem; }
+                thead th { font-size: 0.8rem; padding: 6px 4px !important; }
+                .table tbody td { padding: 6px 4px !important; }
+            }
+        }
+        
+        /* Extra small screens (under 480px) */
+        @media (max-width: 479.98px) {
+            .container-fluid { padding: 10px; }
+            
+            h2 { font-size: 1.1rem; margin-bottom: 15px !important; }
+            
+            .table { font-size: 0.7rem; }
+            
+            thead th { font-size: 0.65rem; padding: 4px 1px !important; }
+            
+            .table tbody td { padding: 4px 1px !important; }
+            
+            .btn { font-size: 0.85rem; padding: 0.4rem !important; }
+            
+            .badge { font-size: 0.6rem; }
+            
+            .filter-btn { font-size: 0.65rem; padding: 1px 6px; }
+            
+            .nav-link { padding: 0.5rem 0.6rem !important; font-size: 0.8rem; }
+            
+            #btnHistory { font-size: 0.75rem; padding: 0.4rem 0.6rem !important; }
+        }
+        
+        /* Landscape orientation adjustments */
+        @media (max-width: 767.98px) and (orientation: landscape) {
+            h2 { margin-bottom: 10px !important; }
+            
+            .card { margin-bottom: 10px; }
+            
+            .card-body { padding: 8px; }
+            
+            #smsBody, #manualNumbers { height: 80px !important; }
+            
+            .table { font-size: 0.7rem; }
+            
+            thead th { padding: 4px 2px !important; }
+            
+            .table tbody td { padding: 4px 2px !important; }
+        }
+        
+        /* Landscape for tablets */
+        @media (min-width: 768px) and (orientation: landscape) {
+            .card.sticky-top { position: sticky !important; top: 20px; }
+        }
+        
+        /* LOGIN MODAL STYLES */
+        .login-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; background-color: #0a0a0a; }
+        .login-card { max-width: 400px; width: 100%; background-color: #151515; border: 1px solid #222; border-radius: 12px; }
+        .login-header { text-align: center; margin-bottom: 30px; }
+        .login-header img { height: 50px; margin-bottom: 15px; }
+        .login-header h1 { color: #31a651; font-size: 1.8rem; margin-bottom: 10px; margin-top: 0; }
+        .login-header p { color: #888; margin-bottom: 0; }
+        .login-form .form-label { color: #31a651; font-weight: 600; }
+        .login-form .form-control { background-color: #1a1a1a; border: 1px solid #333; color: #fff; font-size: 16px; }
+        .login-form .form-control:focus { background-color: #222; border-color: #31a651; color: #fff; box-shadow: 0 0 0 0.25rem rgba(49, 166, 81, 0.25); }
+        .login-form .btn-login { background-color: #31a651; border: none; color: #0a0a0a; font-weight: bold; font-size: 1.1rem; padding: 0.75rem; }
+        .login-form .btn-login:hover { background-color: #288a43; }
+        .login-error { color: #dc3545; margin-top: 10px; text-align: center; font-size: 0.9rem; }
+        .login-loading { display: none; text-align: center; color: #31a651; margin-top: 10px; }
+        .user-info { color: #888; font-size: 0.9rem; }
+        .btn-logout { background-color: #dc3545 !important; border: none !important; }
+        .btn-logout:hover { background-color: #c82333 !important; }
+
+        /* Menu Burger */
+        .burger-menu {
+            position: relative;
+        }
+        
+        .burger-icon {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            cursor: pointer;
+            padding: 5px;
+            background: transparent;
+            border: none;
+        }
+        
+        .burger-icon span {
+            display: block;
+            height: 3px;
+            background-color: #31a651;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+        
+        .burger-icon:hover span {
+            background-color: #288a43;
+        }
+        
+        /* Animation de transformation du burger */
+        .burger-icon.active span:nth-child(1) {
+            transform: rotate(45deg) translateY(11px);
+        }
+        
+        .burger-icon.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .burger-icon.active span:nth-child(3) {
+            transform: rotate(-45deg) translateY(-11px);
+        }
+        
+        @keyframes slideDownIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideUpOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+        }
+        
+        .burger-dropdown {
+            display: none;
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            min-width: 300px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            padding: 10px 0;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .burger-dropdown.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+            animation: slideDownIn 0.3s ease forwards;
+        }
+        
+        .burger-dropdown:not(.show) {
+            animation: slideUpOut 0.3s ease forwards;
+        }
+        
+        .burger-dropdown-item {
+            padding: 10px 20px;
+            color: #e0e0e0;
+            border-bottom: 1px solid #222;
+            display: flex;
+            align-items: center;
+        }
+        
+        .burger-dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .burger-dropdown-item .user-info {
+            display: block;
+            margin-bottom: 0;
+        }
+        
+        .burger-dropdown-item .btn-logout {
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        /* Custom webkit scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 11px;
+            height: 11px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #31a651;
+            border-radius: 6px;
+            border: 3px solid transparent;
+            background-clip: padding-box;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #288a43;
+            background-clip: padding-box;
+            border: 3px solid transparent;
+        }
+
+        /* Pixel Status Indicator Styles */
+        #pixelStatusDot.connected {
+            background-color: #31a651;
+            box-shadow: 0 0 8px rgba(49, 166, 81, 0.6);
+        }
+
+        #pixelStatusDot.disconnected {
+            background-color: #dc3545;
+            box-shadow: 0 0 8px rgba(220, 53, 69, 0.6);
+        }
+
+        #pixelStatusDot.checking {
+            background-color: #ffc107;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        #pixelStatusText.connected {
+            color: #31a651;
+        }
+
+        #pixelStatusText.disconnected {
+            color: #dc3545;
+        }
+
+        #pixelStatusText.checking {
+            color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN MODAL -->
+    <div id="loginContainer" class="login-container">
+        <div class="card login-card">
+            <div class="card-body p-4">
+                <div class="login-header">
+                    <img src="images/logo.svg" alt="Logo">
+                    <h1>🔐 Connexion</h1>
+                    <p>SMS Gateway - Cardio Plein Air</p>
+                </div>
+                
+                <form class="login-form" id="loginForm">
+                    <div class="mb-3">
+                        <label class="form-label" for="loginUsername">Nom d'utilisateur</label>
+                        <input type="text" id="loginUsername" name="loginUsername" class="form-control" placeholder="Entrez votre username" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label" for="loginPassword">Mot de passe</label>
+                        <input type="password" id="loginPassword" name="loginPassword" class="form-control" placeholder="Entrez votre mot de passe" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-login w-100">Connexion</button>
+                    
+                    <div class="login-error" id="loginError"></div>
+                    <div class="login-loading" id="loginLoading">⏳ Connexion en cours...</div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APPLICATION (hidden until logged in) -->
+    <div id="mainApp" style="display: none; height: 100%;">
+        <div class="d-flex align-items-center justify-content-between px-4 py-3" style="background-color: #151515; border-bottom: 1px solid #222; flex-wrap: nowrap; flex-shrink: 0;">
+            <div class="d-flex align-items-center" style="flex: 1; min-width: 0;">
+                <img src="images/logo.svg" alt="Logo" style="height: 40px; margin-right: 15px; flex-shrink: 0;">
+                <h2 class="mb-0" style="color: #31a651; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🚀 SMS Gateway</h2>
+            </div>
+            <div class="d-flex align-items-center gap-3" style="flex-shrink: 0; margin-left: auto;">
+                <!-- BURGER MENU -->
+                <div class="burger-menu">
+                    <button class="burger-icon" id="burgerToggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    <div class="burger-dropdown" id="burgerDropdown">
+                        <!-- INDICATEUR ÉTAT PIXEL -->
+                        <div id="pixelStatusContainer" class="burger-dropdown-item" style="justify-content: flex-start;">
+                            <div id="pixelStatusDot" style="width: 8px; height: 8px; border-radius: 50%; background-color: #888; transition: all 0.3s ease; margin-right: 8px;"></div>
+                            <span id="pixelStatusText" style="color: #888; font-size: 0.85rem;">Vérification...</span>
+                        </div>
+                        <div class="burger-dropdown-item">
+                            <span class="user-info">Connecté : <strong id="loggedUsername"></strong></span>
+                        </div>
+                        <div class="burger-dropdown-item">
+                            <button id="btnLogout" class="btn btn-logout btn-sm">Déconnexion</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid" style="height: calc(100vh - 64px); display: flex; flex-direction: column; padding: 0;">
+            <!-- DROITE : TABLEAU -->
+            <div class="col-12" id="tabsContainer" style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+                <ul class="nav nav-tabs mb-3" id="sendTab">
+                    <li class="nav-item"><button class="nav-link active" id="mass-tab" data-bs-toggle="tab" data-bs-target="#mass-panel">Saisie de masse</button></li>
+                    <li class="nav-item"><button class="nav-link" id="sms-tab" data-bs-toggle="tab" data-bs-target="#sms-panel">SMS <span id="unreadBadge" class="badge bg-danger ms-2" style="display: none;">0</span></button></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="mass-panel">
+                        <!-- Sous-tabs pour Base de données et Saisie Manuelle -->
+                        <ul class="nav nav-tabs nav-tabs-sm mb-3">
+                            <li class="nav-item"><button class="nav-link active" id="db-tab" data-bs-toggle="tab" data-bs-target="#db-panel">Base de données</button></li>
+                            <li class="nav-item"><button class="nav-link" id="manual-tab" data-bs-toggle="tab" data-bs-target="#manual-panel">Saisie Manuelle</button></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="db-panel">
+                                <div class="card p-3">
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <h5 class="text-secondary mb-0">Participants Actifs</h5>
+                                        <div class="d-flex gap-2">
+                                            <div class="d-flex flex-column gap-2">
+                                                <div class="d-flex gap-2">
+                                                    <button id="toggleFilters" class="btn btn-outline-success btn-sm" title="Afficher/Masquer les filtres" data-bs-toggle="modal" data-bs-target="#filtersModal">
+                                                        🔍 Filtres
+                                                    </button>
+                                                    <button id="uploadExcelBtn" class="btn btn-outline-success btn-sm" title="Uploader un fichier Excel">
+                                                        📤 Importer Excel
+                                                    </button>
+                                                    <input type="file" id="excelFile" name="excelFile" style="display: none;" accept=".xlsx,.xls" />
+                                                </div>
+                                                <!-- Tags des filtres appliqués -->
+                                                <div id="activeFiltersTags" class="d-flex flex-wrap gap-2" style="font-size: 0.85rem;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="text" id="customSearch" name="customSearch" class="form-control mb-3" placeholder="Recherche globale (Nom, téléphone...)">
+                                    
+                                    <table id="participantsTable" class="table table-hover w-100">
+                                        <thead>
+                                            <tr>
+                                                <th><input type="checkbox" id="selectAll" name="selectAll"></th>
+                                                <th>Nom</th>
+                                                <th>Téléphone</th>
+                                                <th>Parc</th>
+                                                <th>Type</th>
+                                                <th>Horaire</th>
+                                                <th>Coach</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="participantList"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="manual-panel">
+                                <div class="card p-3">
+                                    <label class="mb-2 text-success fw-bold manualTitle" for="manualNumbers">Numéros séparés par des virgules</label>
+                                    <textarea id="manualNumbers" name="manualNumbers" class="form-control mb-3" style="height: 150px;" placeholder="+1514..."></textarea>
+                                    <button type="button" id="manualSendBtn" class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#composeModal">
+                                        ✉️ Ouvrir le formulaire d'envoi
+                                    </button>
+                                    <div id="manualStatus" class="p-3 rounded d-none"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="sms-panel">
+                        <div class="card p-3">
+                            <div class="mb-3">
+                                <input type="text" id="archiveSearch" name="archiveSearch" class="form-control" placeholder="Rechercher un contact...">
+                            </div>
+                            <div id="archiveContactsList">
+                                <p class="text-muted text-center">Aucun message</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    <!-- MODAL RÉDIGER SMS -->
+    <div class="modal fade" id="composeModal" tabindex="-1" aria-labelledby="composeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="composeModalLabel">✉️ Rédiger un SMS</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label mb-2 ms-2" for="participantsSearch">Destinataires</label>
+                        <div id="participantsTags" class="mb-2 p-2" style="background-color: #1a1a1a; border: 1px solid #333; border-radius: 6px; min-height: 40px; max-height: 120px; overflow-y: auto; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 6px; align-content: flex-start;"></div>
+                        <input type="text" id="participantsSearch" name="participantsSearch" class="form-control" placeholder="Rechercher et ajouter des participants..." style="background-color: #1a1a1a; border: 1px solid #333; position: relative;">
+                        <div id="participantsSuggestions" class="mt-2" style="background-color: #222; border: 1px solid #333; border-radius: 6px; max-height: 150px; overflow-y: auto; display: none; position: absolute; width: calc(100% - 40px); z-index: 1000;"></div>
+                    </div>
+                    <textarea id="smsBody" name="smsBody" class="form-control mb-3" style="height: 150px; resize: none;" placeholder="Écrivez votre message ici..."></textarea>
+                    <div id="progressContainer" class="mt-3 d-none">
+                        <h6 class="small text-success">Progression : <span id="progressText" class="float-end">0/0</span></h6>
+                        <div class="progress mt-2">
+                            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button id="btnSend" type="button" class="btn btn-primary">Envoyer (<span id="count">0</span>)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL RÉSULTATS IMPORT EXCEL -->
+    <div class="modal fade" id="importResultModal" tabindex="-1" aria-labelledby="importResultLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="background-color: #1a1a1a; border: 1px solid #333;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importResultLabel" style="color: #31a651;">📊 Résultat de l'import</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="color: #fff; max-height: 400px; overflow-y: auto;">
+                    <!-- Message principal -->
+                    <div id="importResultMessage" class="alert mb-3" style="display: none;"></div>
+                    
+                    <!-- Statistiques -->
+                    <div id="importStats" style="margin-bottom: 20px;">
+                        <div class="row">
+                            <div class="col-6">
+                                <div style="background-color: #0a0a0a; padding: 15px; border-radius: 6px; border-left: 3px solid #31a651;">
+                                    <div style="font-size: 0.9rem; color: #888;">✅ Succès</div>
+                                    <div style="font-size: 1.8rem; font-weight: bold; color: #31a651;" id="successCount">0</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div style="background-color: #0a0a0a; padding: 15px; border-radius: 6px; border-left: 3px solid #dc3545;">
+                                    <div style="font-size: 0.9rem; color: #888;">❌ Erreurs</div>
+                                    <div style="font-size: 1.8rem; font-weight: bold; color: #dc3545;" id="errorCount">0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Liste des erreurs -->
+                    <div id="errorListContainer" style="display: none;">
+                        <h6 style="color: #ffc107; margin-bottom: 10px;">⚠️ Erreurs détaillées:</h6>
+                        <ul id="errorList" style="list-style: none; padding-left: 0; font-size: 0.9rem;">
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL FILTRES -->
+    <div class="modal fade" id="filtersModal" tabindex="-1" aria-labelledby="filtersModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content" style="background-color: #1a1a1a; border: 1px solid #333;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="filtersModalLabel" style="color: #31a651;">🔍 Filtres</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="color: #fff;">
+                    <div class="mb-3">
+                        <span class="filter-label">Parc</span>
+                        <div id="parcFilters" class="d-flex flex-wrap gap-2"></div>
+                    </div>
+                    <div class="mb-3">
+                        <span class="filter-label">Entraînement</span>
+                        <div id="typeFilters" class="d-flex flex-wrap gap-2"></div>
+                    </div>
+                    <div class="mb-3">
+                        <span class="filter-label">Coach</span>
+                        <div id="coachFilters" class="d-flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FLOATING BUTTON "RÉDIGER UN SMS" -->
+    <div id="composeAction" class="position-fixed bottom-0 end-0 m-4 d-none">
+        <button id="btnCompose" class="btn btn-primary btn-lg shadow-lg" data-bs-toggle="modal" data-bs-target="#composeModal">
+            ✉️ Rédiger un SMS (<span id="selectedCount">0</span>)
+        </button>
+    </div>
+
+
+    <script src="js/socket.io.min.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/dataTables.min.js"></script>
+    <script src="js/dataTables.bootstrap5.js"></script>
+
+    <script>
+        const API_URL = "http://smscpasocket.mike.is-very-nice.org";
+        let authToken = localStorage.getItem('authToken');
+
+        // Add CSS for login styles
+        $('<style>').text(`
+            .login-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+            .login-card { max-width: 400px; width: 100%; }
+            .login-header { text-align: center; margin-bottom: 30px; }
+            .login-header img { height: 50px; margin-bottom: 15px; }
+            .login-header h1 { color: #31a651; font-size: 1.8rem; margin-bottom: 10px; }
+            .login-header p { color: #888; }
+            .login-form .form-label { color: #31a651; font-weight: 600; }
+            .login-form .form-control { background-color: #1a1a1a; border: 1px solid #333; color: #fff; font-size: 16px; }
+            .login-form .form-control:focus { background-color: #222; border-color: #31a651; color: #fff; }
+            .login-form .btn-login { background-color: #31a651; border: none; color: #0a0a0a; font-weight: bold; font-size: 1.1rem; padding: 0.75rem; }
+            .login-form .btn-login:hover { background-color: #288a43; }
+            .login-error { color: #dc3545; margin-top: 10px; text-align: center; }
+            .login-loading { display: none; text-align: center; color: #31a651; }
+            .user-info { color: #888; font-size: 0.9rem; }
+            .btn-logout { background-color: #dc3545 !important; }
+            .btn-logout:hover { background-color: #c82333 !important; }
+        `).appendTo('head');
+
+        // Check if user is already logged in
+        if (authToken) {
+            verifyToken();
+        }
+
+        // LOGIN FORM HANDLER
+        $('#loginForm').on('submit', async function(e) {
+            e.preventDefault();
+            const username = $('#loginUsername').val();
+            const password = $('#loginPassword').val();
+            
+            $('#loginError').text('');
+            $('#loginLoading').show();
+            
+            try {
+                const response = await $.ajax({
+                    url: `${API_URL}/login`,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ username, password })
+                });
+                
+                if (response.success) {
+                    authToken = response.token;
+                    localStorage.setItem('authToken', authToken);
+                    localStorage.setItem('username', response.username);
+                    showMainApp();
+                    initApp();
+                } else {
+                    $('#loginError').text(response.error || 'Erreur de connexion');
+                }
+            } catch (err) {
+                $('#loginError').text('Identifiants invalides');
+            } finally {
+                $('#loginLoading').hide();
+            }
+        });
+
+        // VERIFY TOKEN
+        function verifyToken() {
+            $.ajax({
+                url: `${API_URL}/verify-token`,
+                type: 'GET',
+                headers: { 'Authorization': `Bearer ${authToken}` },
+                success: function(response) {
+                    if (response.success) {
+                        showMainApp();
+                        initApp();
+                    } else {
+                        logout();
+                    }
+                },
+                error: function() {
+                    logout();
+                }
+            });
+        }
+
+        function showMainApp() {
+            $('#loginContainer').hide();
+            $('#mainApp').show();
+            $('#loggedUsername').text(localStorage.getItem('username'));
+        }
+
+        // LOGOUT
+        $('#btnLogout').on('click', function() {
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+                logout();
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('username');
+            authToken = null;
+            location.reload();
+        }
+
+        // Variables globales pour DataTable
+        let dTable;
+        let socket; // WebSocket connection
+        let smsQuickReplyCallbacks = {}; // Store callbacks for quick SMS responses by phone number
+        let selectedParticipantsData = {}; // {participantId: {name, phone}}
+        let allParticipants = []; // Rempli lors du chargement des participants
+
+        // Fonctions globales pour la gestion des tags de participants
+        function updateParticipantsTags() {
+            let tagsHtml = '';
+            const ids = Object.keys(selectedParticipantsData);
+            
+            if (ids.length === 0) {
+                $('#participantsTags').html('<small class="text-muted">Aucun participant sélectionné</small>');
+            } else {
+                ids.forEach(id => {
+                    const data = selectedParticipantsData[id];
+                    tagsHtml += `<span class="badge bg-success" style="padding: 8px 10px; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+                        <span>${data.name}<br><small style="font-size: 0.7rem; color: #c0c0c0;">${data.phone}</small></span>
+                        <button type="button" class="btn-close btn-close-white" onclick="removeParticipantTag('${id}')" style="font-size: 0.7rem; padding: 0; width: 16px; height: 16px;"></button>
+                    </span>`;
+                });
+                $('#participantsTags').html(tagsHtml);
+            }
+            
+            $('#count').text(ids.length);
+            $('#selectedCount').text(ids.length);
+        }
+        
+        function removeParticipantTag(participantId) {
+            delete selectedParticipantsData[participantId];
+            // Décocher aussi le checkbox si visible
+            $(`input.user-check[data-participant-id="${participantId}"]`).prop('checked', false).trigger('change');
+            updateParticipantsTags();
+        }
+        
+        function addParticipantTag(participantId, name, phone) {
+            selectedParticipantsData[participantId] = {name, phone};
+            // Cocher aussi le checkbox si visible
+            $(`input.user-check[data-participant-id="${participantId}"]`).prop('checked', true).trigger('change');
+            updateParticipantsTags();
+            $('#participantsSearch').val('').focus();
+            $('#participantsSuggestions').hide();
+        }
+
+        // Format date to EST timezone
+        function formatDateEST(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('fr-FR', {
+                timeZone: 'America/New_York',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        // Escape HTML characters
+        function escapeHtml(text) {
+            if (!text) return '';
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return String(text).replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Charger les SMS reçus
+        function loadReceivedSMS() {
+            $.ajax({
+                url: `${API_URL}/unread-sms`,
+                type: 'GET',
+                headers: { 'Authorization': `Bearer ${authToken}` },
+                success: function(data) {
+                    let unreadCount = data.filter(s => !s.ReadDate).length;
+                    if (unreadCount > 0) {
+                        $('#unreadBadge').text(unreadCount).show();
+                    } else {
+                        $('#unreadBadge').hide();
+                    }
+
+                    if (data.length === 0) {
+                        $('#receivedSMSList').html('<p class="text-muted text-center">Aucun SMS reçu</p>');
+                        return;
+                    }
+
+                    let html = '';
+                    data.forEach(sms => {
+                        const isRead = sms.ReadDate ? 'read' : '';
+                        const readClass = sms.ReadDate ? 'read' : '';
+                        const date = formatDateEST(sms.ReceivedDate);
+                        html += `
+                            <div class="sms-message-card ${readClass}" data-sms-id="${sms.Id}">
+                                <div class="sms-sender">👤 ${sms.Prenom} ${sms.NomDeFamille}</div>
+                                <div class="sms-sender" style="font-size: 0.85rem; color: #888;">📞 ${sms.SenderNumber || sms.NumeroTel}</div>
+                                <div class="sms-message-text">${sms.Message}</div>
+                                <div class="sms-date">📅 ${date}</div>
+                                ${!sms.ReadDate ? `<div class="sms-actions">
+                                    <button class="btn btn-sm btn-success mark-read-btn" data-sms-id="${sms.Id}">✓ Marquer comme lu</button>
+                                    <button class="btn btn-sm btn-info reply-sms-btn" data-sms-id="${sms.Id}" data-sender="${sms.SenderNumber || sms.NumeroTel}" data-name="${sms.Prenom} ${sms.NomDeFamille}">💬 Répondre</button>
+                                </div>` : ''}
+                            </div>
+                        `;
+                    });
+                    $('#receivedSMSList').html(html);
+
+                    // Ajouter les événements des boutons
+                    $('.mark-read-btn').click(function() {
+                        const smsId = $(this).data('sms-id');
+                        $.ajax({
+                            url: `${API_URL}/mark-sms-read/${smsId}`,
+                            type: 'POST',
+                            headers: { 'Authorization': `Bearer ${authToken}` },
+                            success: function() {
+                                loadReceivedSMS();
+                                loadParticipants(); // Mettre à jour le badge de la liste des participants
+                            }
+                        });
+                    });
+
+                    // Ajouter les événements du bouton Répondre
+                    $('.reply-sms-btn').click(function() {
+                        const smsId = $(this).data('sms-id');
+                        const sender = $(this).data('sender');
+                        const name = $(this).data('name');
+                        
+                        // TODO: Implémenter la fonctionnalité de réponse
+                        console.log(`Répondre à ${name}: ${sender}`);
+                    });
+                }
+            });
+        }
+
+// Charger l'archive des messages envoyés et reçus avec non lus en premier
+        function loadArchive() {
+            $.ajax({
+                url: `${API_URL}/sent-messages-archive`,
+                type: 'GET',
+                headers: { 'Authorization': `Bearer ${authToken}` },
+                success: function(data) {
+                    if (data.length === 0) {
+                        $('#archiveContactsList').html('<p class="text-muted text-center">Aucun message</p>');
+                        return;
+                    }
+
+                    // Group messages by contact
+                    const grouped = {};
+                    
+                    // Fonction pour normaliser les numéros de téléphone
+                    const normalizePhone = (phone) => {
+                        if (!phone) return 'Inconnu';
+                        // Retirer tous les caractères non numériques
+                        let cleaned = String(phone).replace(/\D/g, '');
+                        // Si commence par 1 et a 11 chiffres, retirer le 1
+                        if (cleaned.length === 11 && cleaned.startsWith('1')) {
+                            cleaned = cleaned.substring(1);
+                        }
+                        return cleaned;
+                    };
+                    
+                    data.forEach(msg => {
+                        // Determine contact identifier - pour sent ET received du même contact
+                        let contactKey, displayName, phone;
+                        
+                        // Toujours préférer ParticipantId s'il existe
+                        if (msg.ParticipantId) {
+                            contactKey = msg.ParticipantId;
+                            displayName = msg.Prenom && msg.NomDeFamille ? 
+                                `${msg.Prenom} ${msg.NomDeFamille}` : 
+                                (msg.NumeroTel || 'Inconnu');
+                            phone = msg.NumeroTel || 'N/A';
+                        } else {
+                            // Pas de ParticipantId - utiliser le numéro de téléphone normalisé
+                            const phoneNumber = msg.type === 'sent' ? msg.RecipientNumber : msg.SenderNumber;
+                            const normalizedPhone = normalizePhone(phoneNumber);
+                            contactKey = normalizedPhone;
+                            displayName = 'Inconnu';
+                            phone = phoneNumber || 'N/A';
+                        }
+
+                        if (!grouped[contactKey]) {
+                            grouped[contactKey] = {
+                                displayName: displayName,
+                                phone: phone,
+                                messages: [],
+                                unreadCount: 0
+                            };
+                        }
+                        grouped[contactKey].messages.push(msg);
+                        // Count unread received messages
+                        if (msg.type === 'received' && !msg.IsRead) {
+                            grouped[contactKey].unreadCount++;
+                        }
+                    });
+
+                    // Sort contacts: those with unread first, then by last message date
+                    const sortedContacts = Object.keys(grouped)
+                        .sort((a, b) => {
+                            const aUnread = grouped[a].unreadCount;
+                            const bUnread = grouped[b].unreadCount;
+                            if (aUnread !== bUnread) return bUnread - aUnread; // More unread first
+                            // If same unread count, sort by last message date
+                            const aDate = new Date(grouped[a].messages[0].createdAt);
+                            const bDate = new Date(grouped[b].messages[0].createdAt);
+                            return bDate - aDate;
+                        });
+
+                    // Calculer le total de messages non lus
+                    const totalUnread = sortedContacts.reduce((sum, key) => sum + grouped[key].unreadCount, 0);
+                    
+                    // Mettre à jour le badge du tab SMS
+                    if (totalUnread > 0) {
+                        $('#unreadBadge').text(totalUnread).show();
+                    } else {
+                        $('#unreadBadge').hide();
+                    }
+
+                    let html = '';
+                    sortedContacts.forEach(contactKey => {
+                        const contact = grouped[contactKey];
+                        const count = contact.messages.length;
+                        const lastDate = formatDateEST(contact.messages[0].createdAt).split(' ')[0]; // Just the date part
+                        
+                        // Create a safe ID by removing special characters
+                        const safeId = String(contactKey).replace(/[^a-zA-Z0-9]/g, '_');
+                        
+                        let unreadBadge = '';
+                        if (contact.unreadCount > 0) {
+                            unreadBadge = `<span class="badge bg-danger ms-2">${contact.unreadCount}</span>`;
+                        }
+                        
+                        html += `
+                            <div class="card mb-3" style="background-color: #151515; border: 1px solid #222;">
+                                <div class="card-header" style="background-color: #1a1a1a; cursor: pointer;" onclick="toggleArchiveMessages('${safeId}', '${contactKey}')">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong style="color: #31a651;">${contact.displayName}</strong>
+                                            <br>
+                                            <small class="text-muted">📞 ${contact.phone}</small>
+                                        </div>
+                                        <div class="text-end">
+                                            ${unreadBadge}
+                                            <small class="text-muted d-block">${count} message${count > 1 ? 's' : ''} | ${lastDate}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body" id="archive-${safeId}" style="display: none; padding: 0;">
+                                    <div id="messages-${safeId}" style="max-height: 500px; overflow-y: auto;">
+                        `;
+                        
+                        // Sort messages chronologically (newest first)
+                        const sortedMessages = [...contact.messages].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                        
+                        sortedMessages.forEach(msg => {
+                            const date = formatDateEST(msg.createdAt);
+                            let badge = '';
+                            let backgroundColor = '';
+                            
+                            if (msg.type === 'sent') {
+                                badge = msg.Statut === 'succès' ? 
+                                    '<span class="badge bg-success">✓ Envoyé</span>' : 
+                                    '<span class="badge bg-danger">✗ Erreur</span>';
+                                backgroundColor = '#1f4620';
+                            } else {
+                                // Received message
+                                const unreadClass = !msg.IsRead ? ' (non lu)' : '';
+                                badge = !msg.IsRead ? 
+                                    '<span class="badge bg-warning text-dark">📨 Non lu</span>' :
+                                    '<span class="badge bg-info">📨 Reçu</span>';
+                                backgroundColor = !msg.IsRead ? '#3a3a1a' : '#1a3a4a';
+                            }
+                            
+                            html += `
+                                <div style="border-bottom: 1px solid #222; padding: 12px; color: #e0e0e0; text-align: ${msg.type === 'sent' ? 'right' : 'left'};">
+                                    <div class="d-flex justify-content-${msg.type === 'sent' ? 'end' : 'start'} align-items-start mb-2">
+                                        <small class="text-muted me-2">${date}</small>
+                                        ${badge}
+                                    </div>
+                                    <p style="margin: 0; font-size: 0.95rem; padding: 8px 12px; background-color: ${backgroundColor}; border-radius: 8px; display: inline-block; max-width: 80%;">
+                                        ${msg.Message}
+                                    </p>
+                                </div>
+                            `;
+                        });
+                        
+                        html += `
+                                    </div>
+                                    <div style="padding: 15px; background-color: #1a1a1a; border-top: 1px solid #222;">
+                                        <div class="d-flex gap-2 align-items-stretch">
+                                            <button type="button" class="btn btn-outline-secondary" onclick="toggleEmojiPicker('${safeId}')" title="Ajouter un emoji" style="padding: 0.375rem 0.75rem;">😊</button>
+                                            <textarea id="reply-${safeId}" name="reply-${safeId}" class="form-control" rows="2" placeholder="Répondre..." style="resize: none; flex: 1;"></textarea>
+                                            <button type="button" class="btn btn-success" onclick="sendQuickReply('${safeId}', '${contact.phone}')" title="Envoyer" style="padding: 0.375rem 0.75rem;">
+                                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                    <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div id="emoji-picker-${safeId}" style="display: none; margin-top: 10px; padding: 10px; background-color: #222; border-radius: 8px;">
+                                            <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                                                ${['😊','😂','❤️','👍','👎','🎉','🔥','✅','❌','🤔','😎','🙏','💪','👏','🎯','⚡','✨','💯','🚀','⭐'].map(e => `<button type="button" class="btn btn-sm btn-outline-light" onclick="addEmoji('${safeId}', '${e}')" style="font-size: 1.2rem;">${e}</button>`).join('')}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    $('#archiveContactsList').html(html);
+                    
+                    // Ajouter gestionnaire Enter sur tous les textareas de réponse
+                    $('[id^="reply-"]').on('keydown', function(e) {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            const safeId = this.id.replace('reply-', '');
+                            // Récupérer le numéro de téléphone depuis l'attribut onclick du bouton d'envoi
+                            const sendButton = $(this).closest('.d-flex').find('button[onclick*="sendQuickReply"]');
+                            const onclickAttr = sendButton.attr('onclick');
+                            const phoneMatch = onclickAttr?.match(/sendQuickReply\('[^']+',\s*'([^']+)'\)/);
+                            if (phoneMatch && phoneMatch[1]) {
+                                sendQuickReply(safeId, phoneMatch[1]);
+                            }
+                        }
+                    });
+                    
+                    // Si une conversation était ouverte, la rouvrir sans animation et scroller vers elle
+                    if (window.openConversation) {
+                        const openId = window.openConversation;
+                        $(`#archive-${openId}`).show();
+                        
+                        // Scroller vers la conversation ouverte
+                        const cardElement = $(`#archive-${openId}`).closest('.card');
+                        if (cardElement.length) {
+                            cardElement[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }
+                        
+                        window.openConversation = null;
+                    }
+                },
+                error: function(xhr) {
+                    const error = xhr.responseJSON?.error || 'Erreur lors du chargement de l\'archive';
+                    $('#archiveContactsList').html(`<p class="text-danger">${error}</p>`);
+                }
+            });
+        }
+
+        function toggleArchiveMessages(safeId, contactKey) {
+            const element = $(`#archive-${safeId}`);
+            const isOpening = !element.is(':visible');
+            const currentCard = element.closest('.card');
+            const allCards = $('#archiveContactsList').find('> .card');
+            
+            const archiveSearch = $('#archiveSearch').closest('.mb-3');
+
+            if (isOpening) {
+                // Ouverture: faire un fadeOut sur les autres cartes
+                allCards.not(currentCard).fadeOut(300, function() {
+                    $(this).css('display', 'none');
+                });
+                archiveSearch.fadeOut(200);
+            } else {
+                // Fermeture: faire un fadeIn sur les autres cartes
+                allCards.not(currentCard).fadeIn(300, function() {
+                    $(this).css('display', 'block');
+                });
+                archiveSearch.fadeIn(200);
+            }
+            
+            element.slideToggle();
+            
+            // Si on ouvre la conversation, remettre la couleur par défaut du header avec fade
+            if (isOpening) {
+                const cardHeader = element.closest('.card').find('.card-header');
+                cardHeader.css('background-color', '#1a1a1a');
+            }
+            
+            // Marquer les messages comme lus IMMÉDIATEMENT
+            if (contactKey && contactKey !== 'undefined' && contactKey !== 'Inconnu') {
+                // Compter les messages non lus dans cette conversation avant de les marquer
+                const unreadMessagesCount = $(`#messages-${safeId}`).find('.badge-unread').length;
+                
+                $.ajax({
+                    url: `${API_URL}/mark-conversation-read`,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    headers: { 'Authorization': `Bearer ${authToken}` },
+                    data: JSON.stringify({ contactKey: contactKey }),
+                    success: function() {
+                        console.log('Conversation marquée comme lue dans la BD');
+                        
+                        // Mettre à jour visuellement les badges "Non lu" en "Lu" après 10 secondes
+                        setTimeout(function() {
+                            $(`#messages-${safeId}`).find('.badge-unread').each(function() {
+                                $(this).removeClass('bg-warning text-dark badge-unread').addClass('bg-success').text('✓ Lu');
+                            });
+                            
+                            // Mettre à jour aussi les backgrounds
+                            $(`#messages-${safeId}`).find('div[id^="msg-"]').each(function() {
+                                $(this).find('p').css('background-color', '#1a3a4a');
+                            });
+                            
+                            // Mettre à jour le badge de la card et le badge du tab APRÈS le refresh
+                            if (unreadMessagesCount > 0) {
+                                // Mettre à jour le badge de la card
+                                const cardBadge = element.closest('.card').find('.card-header .badge.bg-danger');
+                                if (cardBadge.length > 0) {
+                                    cardBadge.remove();
+                                }
+                                
+                                // Décrémenter le badge du tab SMS
+                                const unreadBadge = $('#unreadBadge');
+                                if (unreadBadge.length > 0) {
+                                    const currentCount = parseInt(unreadBadge.text());
+                                    const newCount = currentCount - unreadMessagesCount;
+                                    if (newCount > 0) {
+                                        unreadBadge.text(newCount);
+                                    } else {
+                                        unreadBadge.hide();
+                                    }
+                                }
+                            }
+                        }, 10000); // 10 secondes
+                    },
+                    error: function(err) {
+                        console.error('Erreur lors du marquage comme lu:', err);
+                    }
+                });
+            }
+        }
+
+        function toggleEmojiPicker(safeId) {
+            const picker = $(`#emoji-picker-${safeId}`);
+            const allPickers = $('[id^="emoji-picker-"]');
+            let backdrop = $('#emojiPickerBackdrop');
+
+            // Create backdrop once
+            if (!backdrop.length) {
+                $('body').append('<div id="emojiPickerBackdrop"></div>');
+                backdrop = $('#emojiPickerBackdrop');
+            }
+
+            // Add header/close once per picker
+            if (!picker.data('header-added')) {
+                picker.prepend('<div class="emoji-picker-header"><span>Emojis</span><button type="button" class="btn-close btn-close-white emoji-picker-close" aria-label="Fermer"></button></div>');
+                picker.data('header-added', true);
+                picker.on('click', '.emoji-picker-close', function() {
+                    picker.hide();
+                    backdrop.hide();
+                });
+            }
+
+            const isVisible = picker.is(':visible');
+
+            // If already open, close it and exit
+            if (isVisible) {
+                picker.hide();
+                backdrop.hide();
+                return;
+            }
+
+            // Hide other pickers, then show this one with backdrop
+            allPickers.hide();
+            picker.show();
+            backdrop.show().off('click').on('click', function() {
+                allPickers.hide();
+                backdrop.hide();
+            });
+        }
+
+        function addEmoji(safeId, emoji) {
+            const textarea = $(`#reply-${safeId}`);
+            textarea.val(textarea.val() + emoji);
+            textarea.focus();
+        }
+
+        function showNotification(message, type = 'info', duration = 3000) {
+            // Create notification container if it doesn't exist
+            if ($('#notificationContainer').length === 0) {
+                $('body').append('<div id="notificationContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>');
+            }
+            
+            const notificationId = 'notification-' + Date.now();
+            const bgColor = type === 'success' ? '#1f4620' : type === 'error' ? '#3a1a1a' : '#1a3a4a';
+            const textColor = type === 'success' ? '#31a651' : type === 'error' ? '#ff6b6b' : '#87ceeb';
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : '📨';
+            
+            const html = `
+                <div id="${notificationId}" style="
+                    background-color: ${bgColor};
+                    color: ${textColor};
+                    padding: 12px 16px;
+                    border-radius: 6px;
+                    margin-bottom: 10px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                    border-left: 4px solid ${textColor};
+                    font-size: 0.95rem;
+                    max-width: 400px;
+                    word-wrap: break-word;
+                ">
+                    ${icon} ${escapeHtml(message)}
+                </div>
+            `;
+            
+            $('#notificationContainer').append(html);
+            
+            // Auto-remove after duration
+            setTimeout(() => {
+                $(`#${notificationId}`).fadeOut(300, function() {
+                    $(this).remove();
+                });
+            }, duration);
+        }
+
+        function addReceivedMessageToConversation(message) {
+            // Try to find the participant contact key by matching phone
+            const senderPhone = String(message.SenderNumber || '').replace(/\D/g, '');
+            
+            // Find the conversation that matches this sender
+            let foundSafeId = null;
+            let foundCard = null;
+            $('#archiveContactsList .card').each(function() {
+                const cardText = $(this).text();
+                if (cardText.includes(senderPhone.slice(-10)) || cardText.includes(message.SenderNumber)) {
+                    // Found the matching conversation
+                    foundCard = $(this);
+                    const header = $(this).find('.card-header');
+                    const onclickAttr = header.attr('onclick');
+                    const match = onclickAttr?.match(/toggleArchiveMessages\('([^']+)'/);
+                    if (match) foundSafeId = match[1];
+                    return false;
+                }
+            });
+            
+            if (foundSafeId && foundCard) {
+                const messagesDiv = $(`#messages-${foundSafeId}`);
+                const isOpen = messagesDiv.is(':visible');
+                
+                if (messagesDiv.length > 0) {
+                    const date = formatDateEST(message.ReceivedDate || new Date());
+                    const messageId = `msg-${message.Id}`;
+                    const messageHtml = `
+                        <div id="${messageId}" style="border-bottom: 1px solid #222; padding: 12px; color: #e0e0e0; text-align: left;">
+                            <div class="d-flex justify-content-start align-items-start mb-2">
+                                <small class="text-muted me-2">${date}</small>
+                                <span class="badge badge-unread bg-warning text-dark">📨 Non lu</span>
+                            </div>
+                            <p style="margin: 0; font-size: 0.95rem; padding: 8px 12px; background-color: #3a3a1a; border-radius: 8px; display: inline-block; max-width: 80%;">
+                                ${escapeHtml(message.Message)}
+                            </p>
+                        </div>
+                    `;
+                    messagesDiv.prepend(messageHtml);
+                    if (isOpen) messagesDiv.scrollTop(0);
+                    
+                    // Si la conversation est fermée, mettre à jour le badge et le background de la card
+                    if (!isOpen) {
+                        const cardHeader = foundCard.find('.card-header .d-flex .text-end');
+                        const existingBadge = cardHeader.find('.badge.bg-danger');
+                        
+                        if (existingBadge.length > 0) {
+                            // Incrémenter le badge existant
+                            const currentCount = parseInt(existingBadge.text()) || 0;
+                            existingBadge.text(currentCount + 1);
+                        } else {
+                            // Créer un nouveau badge
+                            cardHeader.prepend('<span class="badge bg-danger ms-2">1</span>');
+                        }
+                        
+                        // Changer le background du card-header pour indiquer un message non lu
+                        foundCard.find('.card-header').css('background-color', '#1f3a1f');
+                    }
+                    
+                    // Mark as read after 10 seconds ONLY if conversation is open
+                    if (isOpen) {
+                        setTimeout(() => {
+                            const badge = $(`#${messageId} .badge-unread`);
+                            badge.removeClass('bg-warning text-dark').addClass('bg-success').text('✓ Lu');
+                            
+                            // Also update background color
+                            const msgDiv = $(`#${messageId}`);
+                            msgDiv.find('p').css('background-color', '#1a3a4a');
+                            
+                            // Decrement unread count in tab
+                            const unreadBadge = $('#unreadBadge');
+                            if (unreadBadge.length > 0) {
+                                const currentCount = parseInt(unreadBadge.text());
+                                if (currentCount > 1) {
+                                    unreadBadge.text(currentCount - 1);
+                                } else {
+                                    unreadBadge.hide();
+                                }
+                            }
+                            
+                            // Mark as read in DB
+                            $.ajax({
+                                url: `${API_URL}/mark-sms-read/${message.Id}`,
+                                type: 'POST',
+                                headers: { 'Authorization': `Bearer ${authToken}` },
+                                success: () => console.log(`✓ SMS ${message.Id} marqué comme lu`),
+                                error: (err) => console.error('Erreur marquage SMS:', err)
+                            });
+                        }, 10000);
+                    }
+                    
+                    return true; // Successfully added to conversation
+                }
+            }
+            return false; // Conversation not found
+        }
+
+        function sendQuickReply(safeId, phone) {
+            const textarea = $(`#reply-${safeId}`);
+            const message = textarea.val().trim();
+            
+            if (!message) {
+                return; // Ne rien faire si vide
+            }
+
+            // Désactiver le bouton et afficher spinner
+            const sendBtn = $(`#reply-${safeId}`).closest('.d-flex').find('button[onclick*="sendQuickReply"]');
+            sendBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+
+            // Créer une fonction callback pour cette réponse
+            let responseReceived = false;
+            const callbackId = `${phone}-${Date.now()}`;
+            const timeoutId = setTimeout(() => {
+                if (!responseReceived) {
+                    delete smsQuickReplyCallbacks[callbackId];
+                    sendBtn.prop('disabled', false).html('<svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/></svg>');
+                    const messagesDiv = $(`#messages-${safeId}`);
+                    const errorHtml = `
+                        <div style="border-bottom: 1px solid #222; padding: 12px; color: #ff6b6b;">
+                            <div class="d-flex justify-content-start align-items-start mb-2">
+                                <small class="text-muted me-2">${formatDateEST(new Date())}</small>
+                                <span class="badge bg-danger">✗ Timeout</span>
+                            </div>
+                            <p style="margin: 0; font-size: 0.95rem; padding: 8px 12px; background-color: #3a1a1a; border-radius: 8px; display: inline-block; max-width: 80%;">
+                                Pas de réponse du serveur
+                            </p>
+                        </div>
+                    `;
+                    messagesDiv.prepend(errorHtml);
+                    messagesDiv.scrollTop(0);
+                }
+            }, 10000);
+
+            // Stocker le callback
+            smsQuickReplyCallbacks[callbackId] = (data) => {
+                responseReceived = true;
+                clearTimeout(timeoutId);
+                delete smsQuickReplyCallbacks[callbackId];
+                
+                // Réactiver le bouton
+                sendBtn.prop('disabled', false).html('<svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/></svg>');
+                
+                if (data.success) {
+                    // Ajouter le message à la conversation
+                    const messagesDiv = $(`#messages-${safeId}`);
+                    const messageHtml = `
+                        <div style="border-bottom: 1px solid #222; padding: 12px; color: #e0e0e0; text-align: right;">
+                            <div class="d-flex justify-content-end align-items-start mb-2">
+                                <small class="text-muted me-2">${formatDateEST(new Date())}</small>
+                                <span class="badge bg-success">✓ Envoyé</span>
+                            </div>
+                            <p style="margin: 0; font-size: 0.95rem; padding: 8px 12px; background-color: #1f4620; border-radius: 8px; display: inline-block; max-width: 80%;">
+                                ${escapeHtml(data.Message)}
+                            </p>
+                        </div>
+                    `;
+                    messagesDiv.prepend(messageHtml);
+                    messagesDiv.scrollTop(0);
+                    
+                    // Effacer le textarea
+                    textarea.val('');
+                } else {
+                    // Afficher l'erreur dans la conversation
+                    const messagesDiv = $(`#messages-${safeId}`);
+                    const errorHtml = `
+                        <div style="border-bottom: 1px solid #222; padding: 12px; color: #ff6b6b;">
+                            <div class="d-flex justify-content-start align-items-start mb-2">
+                                <small class="text-muted me-2">${formatDateEST(new Date())}</small>
+                                <span class="badge bg-danger">✗ Erreur</span>
+                            </div>
+                            <p style="margin: 0; font-size: 0.95rem; padding: 8px 12px; background-color: #3a1a1a; border-radius: 8px; display: inline-block; max-width: 80%;">
+                                <strong>Erreur:</strong> ${escapeHtml(data.error || 'Erreur inconnue')}
+                            </p>
+                        </div>
+                    `;
+                    messagesDiv.prepend(errorHtml);
+                    messagesDiv.scrollTop(0);
+                }
+            };
+
+            // Envoyer via WebSocket
+            socket.emit('send-sms-quick', {
+                message: message,
+                phone: phone,
+                safeId: safeId,
+                callbackId: callbackId
+            });
+        }
+
+        // Charger la liste des participants
+        function loadParticipants() {
+            $.ajax({
+                url: `${API_URL}/participants`,
+                type: 'GET',
+                headers: { 'Authorization': `Bearer ${authToken}` },
+                success: function(data) {
+                    if ($.fn.DataTable.isDataTable('#participantsTable')) $('#participantsTable').DataTable().destroy();
+                    
+                    // Remplir la liste globale des participants pour l'autocomplétion
+                    allParticipants = data.map(p => ({
+                        id: p.Id,
+                        name: `${p.Prenom} ${p.NomDeFamille}`,
+                        phone: p.NumeroTel
+                    }));
+                    
+                    let rows = '';
+                    data.forEach(p => {
+                        rows += `<tr class="align-middle">
+                            <td><input type="checkbox" id="checkbox-${p.Id}" name="participant-${p.Id}" class="user-check" value="${p.Id}" data-participant-id="${p.Id}" data-name="${p.Prenom} ${p.NomDeFamille}" data-phone="${p.NumeroTel}"></td>
+                            <td><strong>${p.Prenom} ${p.NomDeFamille}</strong></td>
+                            <td class="phone-number font-monospace">${p.NumeroTel}</td>
+                            <td><span class="badge bg-dark border border-secondary">${p.Parc}</span></td>
+                            <td>${p.TypeEntrainement}</td>
+                            <td><small>${p.JourInscrit} ${p.HeureInscrit}</small></td>
+                            <td>${p.NomEntraineur}</td>
+                        </tr>`;
+                    });
+                    $('#participantList').html(rows);
+                    
+                    dTable = $('#participantsTable').DataTable({ 
+                        pageLength: 25,
+                        scrollY: window.innerWidth < 768 ? 'calc(100vh - 520px)' : 'calc(-370px + 84vh)',
+                        scrollCollapse: true,
+                        dom: 'tip',
+                        columnDefs: [
+                            { orderable: false, targets: 0 },
+                            { type: 'string', targets: 2 }  // Forcer le type string pour éviter l'alignement numérique
+                        ],
+                        language: {
+                            info: "Affichage de _START_ à _END_ sur _TOTAL_ participant(e)s",
+                            infoEmpty: "Affichage de 0 à 0 sur 0 participant(e)",
+                            infoFiltered: "(filtré de _MAX_ participant(e)s au total)",
+                            lengthMenu: "Afficher _MENU_ participant(e)s",
+                            search: "Rechercher:",
+                            zeroRecords: "Aucun(e) participant(e) correspondant(e) trouvé(e)",
+                            paginate: {
+                                next: ">>",
+                                previous: "<<"
+                            }
+                        }
+                    });
+
+                    generateFilters(data);
+                    
+                    // Recalculate DataTable dimensions on window resize
+                    $(window).on('resize', function() {
+                        if (dTable) {
+                            dTable.columns.adjust().draw();
+                        }
+                    });
+                },
+                error: function() {
+                    logout();
+                }
+            });
+        }
+
+        // Générer les filtres
+        function generateFilters(data) {
+            const setup = (id, key, col) => {
+                const vals = [...new Set(data.map(p => p[key]))].filter(Boolean).sort();
+                let h = `<button class="btn btn-outline-success btn-sm filter-btn active" data-col="${col}" data-val="">Tous</button>`;
+                vals.forEach(v => h += `<button class="btn btn-outline-success btn-sm filter-btn" data-col="${col}" data-val="${v}">${v}</button>`);
+                $(`#${id}`).html(h);
+            };
+            setup('parcFilters', 'Parc', 3);
+            setup('typeFilters', 'TypeEntrainement', 4);
+            setup('coachFilters', 'NomEntraineur', 6);
+        }
+
+        // Synchroniser SMS non lus du Pixel 2
+        function syncPixelUnreadOnly() {
+            if (!confirm('Synchroniser les SMS non lus du Pixel 2?')) return;
+            
+            $('#syncStatus').html('⏳ Synchronisation en cours...').show();
+            
+            $.ajax({
+                url: `${API_URL}/pixel/sync-unread-only`,
+                type: 'POST',
+                headers: { 'Authorization': `Bearer ${authToken}` },
+                success: function(data) {
+                    $('#syncStatus').html(`✅ ${data.message}`).removeClass('alert-danger').addClass('alert-success');
+                    console.log('📱 Résultats:', data);
+                    loadReceivedSMS();
+                    loadParticipants();
+                },
+                error: function(xhr) {
+                    const error = xhr.responseJSON?.error || 'Erreur inconnue';
+                    $('#syncStatus').html(`❌ Erreur: ${error}`).removeClass('alert-info alert-success').addClass('alert-danger');
+                    console.error('Erreur:', error);
+                }
+            });
+        }
+
+        // Synchroniser TOUS les SMS du Pixel 2
+        function syncPixelAll() {
+            if (!confirm('Synchroniser TOUS les SMS du Pixel 2?\n\nCette opération peut prendre du temps.')) return;
+            
+            $('#syncStatus').html('⏳ Synchronisation de tous les SMS en cours...').show();
+            
+            $.ajax({
+                url: `${API_URL}/pixel/sync-sms`,
+                type: 'POST',
+                headers: { 'Authorization': `Bearer ${authToken}` },
+                success: function(data) {
+                    $('#syncStatus').html(`✅ ${data.message}`).removeClass('alert-danger').addClass('alert-success');
+                    console.log('📱 Résultats:', data);
+                    loadReceivedSMS();
+                    loadParticipants();
+                },
+                error: function(xhr) {
+                    const error = xhr.responseJSON?.error || 'Erreur inconnue';
+                    $('#syncStatus').html(`❌ Erreur: ${error}`).removeClass('alert-info alert-success').addClass('alert-danger');
+                    console.error('Erreur:', error);
+                }
+            });
+        }
+
+        // Fonction pour vérifier l'état de connexion au serveur Pixel
+        function checkPixelStatus() {
+            const dot = $('#pixelStatusDot');
+            const text = $('#pixelStatusText');
+            
+            // État "Vérification en cours"
+            dot.removeClass('connected disconnected').addClass('checking');
+            text.removeClass('connected disconnected').addClass('checking').text('Vérification...');
+            
+            $.ajax({
+                url: API_URL + '/pixel-status',
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + authToken
+                },
+                timeout: 5000,
+                success: function(response) {
+                    if (response.connected) {
+                        dot.removeClass('checking disconnected').addClass('connected');
+                        text.removeClass('checking disconnected').addClass('connected').text('Téléphone: Pixel 2 Connecté');
+                    } else {
+                        dot.removeClass('checking connected').addClass('disconnected');
+                        text.removeClass('checking connected').addClass('disconnected').text('Téléphone: Pixel 2 Déconnecté');
+                    }
+                },
+                error: function() {
+                    dot.removeClass('checking connected').addClass('disconnected');
+                    text.removeClass('checking connected').addClass('disconnected').text('Erreur de connexion Téléphone: Pixel 2');
+                }
+            });
+        }
+
+        function initApp() {
+            // Vérifier l'état Pixel au démarrage
+            checkPixelStatus();
+            // Vérifier l'état toutes les 30 secondes
+            setInterval(checkPixelStatus, 30000);
+            
+            socket = io(API_URL, {
+                auth: { token: authToken }
+            });
+
+            // Toggle burger menu
+            $('#burgerToggle').on('click', function(e) {
+                e.stopPropagation();
+                $('#burgerDropdown').toggleClass('show');
+                $(this).toggleClass('active');
+            });
+
+            // Fermer le menu burger quand on clique ailleurs
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.burger-menu').length) {
+                    $('#burgerDropdown').removeClass('show');
+                    $('#burgerToggle').removeClass('active');
+                }
+            });
+
+            // Gestion filtres
+            $(document).on('click', '.filter-btn', function() {
+                const col = $(this).data('col');
+                const val = $(this).data('val');
+                const container = $(this).parent();
+                
+                if (val === '') {
+                    container.find('.filter-btn').removeClass('active');
+                    $(this).addClass('active');
+                } else {
+                    $(this).toggleClass('active');
+                    const hasActive = container.find('.filter-btn:not([data-val=""]).active').length > 0;
+                    if (hasActive) {
+                        container.find('[data-val=""]').removeClass('active');
+                    } else {
+                        container.find('[data-val=""]').addClass('active');
+                    }
+                }
+                
+                const vals = container.find('.filter-btn.active').map((i, el) => $(el).data('val')).get().filter(v => v);
+                const searchVal = vals.length > 0 ? vals.join('|') : '';
+                dTable.column(col).search(searchVal, true, false).draw();
+                $('.user-check').prop('checked', false); updateCount();
+                
+                // Mettre à jour les tags de filtres appliqués
+                updateActiveFiltersTags();
+            });
+            
+            // Fonction pour afficher les filtres appliqués
+            function updateActiveFiltersTags() {
+                let tags = '';
+                
+                // Parc
+                const parcVals = $('#parcFilters .filter-btn.active').map((i, el) => $(el).data('val')).get().filter(v => v);
+                parcVals.forEach(v => {
+                    tags += `<span class="badge bg-success" style="cursor: pointer;" onclick="clearFilterTag('${v}', 'Parc')">Parc: ${v} ✕</span>`;
+                });
+                
+                // Entraînement
+                const typeVals = $('#typeFilters .filter-btn.active').map((i, el) => $(el).data('val')).get().filter(v => v);
+                typeVals.forEach(v => {
+                    tags += `<span class="badge bg-success" style="cursor: pointer;" onclick="clearFilterTag('${v}', 'Type')">Type: ${v} ✕</span>`;
+                });
+                
+                // Coach
+                const coachVals = $('#coachFilters .filter-btn.active').map((i, el) => $(el).data('val')).get().filter(v => v);
+                coachVals.forEach(v => {
+                    tags += `<span class="badge bg-success" style="cursor: pointer;" onclick="clearFilterTag('${v}', 'Coach')">Coach: ${v} ✕</span>`;
+                });
+                
+                $('#activeFiltersTags').html(tags);
+            }
+            
+            // Fonction pour supprimer un filtre via le tag
+            window.clearFilterTag = function(val, col) {
+                let filterContainer;
+                if (col === 'Parc') filterContainer = '#parcFilters';
+                else if (col === 'Type') filterContainer = '#typeFilters';
+                else if (col === 'Coach') filterContainer = '#coachFilters';
+                
+                $(filterContainer).find(`.filter-btn[data-val="${val}"]`).click();
+            };
+
+            // WebSocket
+            socket.on('progress', data => {
+                $('#progressContainer').removeClass('d-none');
+                $('#progressBar').css('width', (data.actuel / data.total * 100) + '%');
+                $('#progressText').text(`${data.actuel} / ${data.total}`);
+                Object.keys(data.details).forEach(id => {
+                    let s = data.details[id];
+                    $(`.user-check[value="${id}"]`).closest('tr').addClass(s === 'succès' ? 'table-success' : 'table-danger');
+                    if (id.startsWith('manual-')) {
+                        $('#manualStatus').removeClass('d-none');
+                        let ph = id.replace('manual-', '');
+                        if ($(`#log-${ph}`).length === 0) $('#manualStatus').append(`<div id="log-${ph}" style="color:${s==='succès'?'#31a651':'#dc3545'}">${s==='succès'?'✅':'❌'} ${ph}</div>`);
+                    }
+                });
+            });
+
+            socket.on('finish', () => {
+                setTimeout(() => { $('#progressContainer').fadeOut(); $('#btnSend').prop('disabled', false).text('Envoyer'); alert("Terminé !"); }, 1000);
+            });
+
+            socket.on('sms-sent', (data) => {
+                // Chercher et appeler le callback exact en utilisant callbackId
+                if (data.callbackId && smsQuickReplyCallbacks[data.callbackId]) {
+                    smsQuickReplyCallbacks[data.callbackId](data);
+                }
+            });
+
+            socket.on('new-sms', (data) => {
+                // Try to add message directly to open conversation first
+                const addedToConversation = addReceivedMessageToConversation(data);
+                
+                // Refresh SMS list
+                loadReceivedSMS();
+                
+                // If conversation is not open, refresh archive list
+                if (!addedToConversation && $('#archiveTab').hasClass('active')) {
+                    loadArchive();
+                }
+                
+                // Show notification
+                const senderName = data.Prenom && data.NomDeFamille ? 
+                    `${data.Prenom} ${data.NomDeFamille}` : 
+                    (data.SenderNumber || 'Inconnu');
+                showNotification(`Nouveau SMS de ${senderName}`, 'info', 4000);
+                
+                console.log('📨 Nouveau SMS reçu de:', data.SenderNumber);
+            });
+
+            // Actions
+            $('#btnSend').click(function() {
+                const msg = $('#smsBody').val();
+                if (!msg) return alert("Message vide");
+                let ids = $('.user-check:checked').map(function(){ return $(this).val(); }).get();
+                let phones = $('#manualNumbers').val().split(',').map(n => n.trim()).filter(n => n.length > 5);
+                let isManual = $('#manual-tab').hasClass('active');
+                
+                let count = isManual ? phones.length : ids.length;
+                if (count === 0) return alert("Sélectionnez des destinataires");
+
+                if (confirm(`Envoyer à ${count} personnes ?\n\nMessage : ${msg}`)) {
+                    $(this).prop('disabled', true).text('Envoi...');
+                    $.ajax({
+                        url: `${API_URL}/send-bulk`,
+                        type: 'POST',
+                        contentType: 'application/json',
+                        headers: { 'Authorization': `Bearer ${authToken}` },
+                        data: JSON.stringify(isManual ? {message: msg, phones: phones} : {message: msg, ids: ids})
+                    });
+                }
+            });
+
+            // Préparer l'envoi manuel : parse les numéros et les affiche dans le compose
+            $('#manualSendBtn').on('click', function(e) {
+                e.preventDefault();
+                const raw = $('#manualNumbers').val();
+                const phones = raw.split(',').map(n => n.trim()).filter(n => n.length > 5);
+
+                if (phones.length === 0) {
+                    alert('Ajoutez au moins un numéro dans Saisie Manuelle');
+                    // Empêche l'ouverture du modal si vide
+                    $('#composeModal').modal('hide');
+                    return;
+                }
+
+                // Injecter les numéros manuels dans la sélection globale pour qu'ils restent visibles
+                phones.forEach(p => {
+                    const key = `manual-${p}`;
+                    if (!selectedParticipantsData[key]) {
+                        selectedParticipantsData[key] = { name: p, phone: p, manual: true };
+                    }
+                });
+
+                // Rafraîchir les tags via la logique centrale (conserve les manuels quand on ajoute d'autres destinataires)
+                updateParticipantsTags();
+
+                // Nettoyer la recherche participante pour éviter pollution
+                $('#participantsSearch').val('');
+            });
+
+            // Historique
+            
+            // Clic sur la row pour sélectionner
+            $(document).on('click', '#participantsTable tbody tr', function(e) {
+                if ($(e.target).is('input[type="checkbox"], a, button')) return;
+                const checkbox = $(this).find('.user-check');
+                checkbox.prop('checked', !checkbox.prop('checked')).trigger('change');
+            });
+
+            function updateCount() {
+                // Compter les checkboxes cochées dans le DOM
+                let sel = $('.user-check:checked');
+                let count = sel.length;
+                
+                // Ajouter les participants sélectionnés mais pas actuellement dans le DOM (pagination)
+                count = Object.keys(selectedParticipantsData).length;
+                
+                $('#count').text(count);
+                $('#selectedCount').text(count);
+                
+                // Mettre à jour les tags des participants dans le modal
+                updateParticipantsTags();
+                
+                if (count > 0) {
+                    $('#composeAction').fadeIn().removeClass('d-none');
+                } else {
+                    $('#composeAction').fadeOut();
+                }
+            }
+
+            // Gestion des checkboxes et synchronisation avec les tags
+            $(document).on('change', '.user-check', function() {
+                $(this).closest('tr').toggleClass('selected', this.checked);
+                
+                const participantId = $(this).data('participant-id');
+                const name = $(this).data('name');
+                const phone = $(this).data('phone');
+                
+                if (this.checked) {
+                    selectedParticipantsData[participantId] = {name, phone};
+                } else {
+                    delete selectedParticipantsData[participantId];
+                }
+                updateCount();
+            });
+            
+            // Autocomplétion pour les participants
+            $('#participantsSearch').on('input', function() {
+                const searchVal = $(this).val().toLowerCase().trim();
+                
+                if (searchVal.length < 1) {
+                    $('#participantsSuggestions').hide();
+                    return;
+                }
+                
+                // Filtrer les participants qui ne sont pas déjà sélectionnés
+                const suggestions = allParticipants.filter(p => 
+                    !selectedParticipantsData[p.id] && 
+                    (p.name.toLowerCase().includes(searchVal) || p.phone.includes(searchVal))
+                ).slice(0, 10);
+                
+                if (suggestions.length > 0) {
+                    let suggestionsHtml = '';
+                    suggestions.forEach(p => {
+                        suggestionsHtml += `<div class="p-2" style="border-bottom: 1px solid #444; cursor: pointer;" onclick="addParticipantTag('${p.id}', '${escapeHtml(p.name)}', '${p.phone}')">
+                            <div style="color: #31a651; font-weight: 500;">${escapeHtml(p.name)}</div>
+                            <small style="color: #888;">${p.phone}</small>
+                        </div>`;
+                    });
+                    $('#participantsSuggestions').html(suggestionsHtml).show();
+                } else {
+                    $('#participantsSuggestions').html('<div class="p-2" style="color: #888; text-align: center;">Aucun participant trouvé</div>').show();
+                }
+            });
+            
+            // Fermer les suggestions quand on clique ailleurs
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('#participantsSearch, #participantsSuggestions').length) {
+                    $('#participantsSuggestions').hide();
+                }
+            });
+            
+            // Touche Entrée pour ajouter le premier résultat
+            $('#participantsSearch').on('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const firstSuggestion = $('#participantsSuggestions').find('div').first();
+                    if (firstSuggestion.length) {
+                        firstSuggestion.click();
+                    }
+                }
+            });
+
+            $("#customSearch").on("input", function() { dTable.search(this.value).draw(); });
+            
+            $(document).on('change', '#selectAll', function() { 
+                const isChecked = this.checked;
+                
+                if (isChecked) {
+                    // Ajouter TOUS les participants (même ceux non visibles) à selectedParticipantsData
+                    allParticipants.forEach(p => {
+                        selectedParticipantsData[p.id] = { name: p.name, phone: p.phone };
+                    });
+                    
+                    // Cocher tous les checkboxes visibles
+                    $('.user-check').prop('checked', true);
+                } else {
+                    // Vider la sélection
+                    selectedParticipantsData = {};
+                    
+                    // Décocher tous les checkboxes
+                    $('.user-check').prop('checked', false);
+                }
+                
+                updateCount();
+            });
+            
+            // Mettre à jour les checkboxes quand on change de page dans DataTable
+            $(document).on('draw.dt', '#participantsTable', function() {
+                if (dTable) {
+                    dTable.rows({ page: 'current' }).every(function() {
+                        const checkbox = $(this.node()).find('.user-check');
+                        const participantId = checkbox.data('participant-id');
+                        
+                        // Cocher si dans selectedParticipantsData, décocher sinon
+                        const shouldBeChecked = participantId in selectedParticipantsData;
+                        checkbox.prop('checked', shouldBeChecked);
+                    });
+                }
+            });
+
+            // Search in archive
+            $("#archiveSearch").on("input", function() {
+                const searchVal = this.value.toLowerCase();
+                $('#archiveContactsList').find('.card').each(function() {
+                    const text = $(this).find('.card-header').text().toLowerCase();
+                    $(this).toggle(text.includes(searchVal));
+                });
+            });
+
+            // Upload Excel pour importer/mettre à jour les participants
+            $('#uploadExcelBtn').click(function() {
+                $('#excelFile').click();
+            });
+
+            $('#excelFile').change(function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                $.ajax({
+                    url: API_URL + '/api/participants/import-excel',
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'Authorization': 'Bearer ' + authToken
+                    },
+                    success: function(response) {
+                        // Afficher le modal avec les résultats
+                        showImportResult(response, true);
+                        loadParticipants(); // Recharger la liste
+                        $('#excelFile').val(''); // Réinitialiser l'input
+                    },
+                    error: function(xhr) {
+                        const errorMsg = xhr.responseJSON?.error || 'Erreur lors de l\'import';
+                        showImportResult({ message: errorMsg, successCount: 0, errorCount: 1, errors: [errorMsg] }, false);
+                        $('#excelFile').val('');
+                    }
+                });
+            });
+            
+            // Fonction pour afficher les résultats d'import
+            function showImportResult(response, isSuccess) {
+                const modal = new bootstrap.Modal(document.getElementById('importResultModal'));
+                
+                // Réinitialiser le modal
+                $('#importResultMessage').hide();
+                $('#errorListContainer').hide();
+                $('#errorList').html('');
+                
+                // Message principal
+                const messageDiv = $('#importResultMessage');
+                if (isSuccess && response.successCount > 0) {
+                    messageDiv.html('<strong>✅ Import réussi !</strong> ' + response.message);
+                    messageDiv.removeClass('alert-danger alert-warning').addClass('alert-success').show();
+                } else if (!isSuccess) {
+                    messageDiv.html('<strong>❌ Erreur lors de l\'import</strong>');
+                    messageDiv.removeClass('alert-success alert-warning').addClass('alert-danger').show();
+                } else if (response.errorCount > 0) {
+                    messageDiv.html('<strong>⚠️ Import partiel</strong> Des erreurs se sont produites.');
+                    messageDiv.removeClass('alert-success alert-danger').addClass('alert-warning').show();
+                }
+                
+                // Mettre à jour les statistiques
+                $('#successCount').text(response.successCount || 0);
+                $('#errorCount').text(response.errorCount || 0);
+                
+                // Afficher les erreurs si présentes
+                if (response.errors && response.errors.length > 0) {
+                    response.errors.forEach(error => {
+                        $('#errorList').append(`<li style="margin-bottom: 8px; padding: 8px; background-color: #0a0a0a; border-radius: 4px; border-left: 3px solid #ffc107;">⚠️ ${error}</li>`);
+                    });
+                    $('#errorListContainer').show();
+                }
+                
+                modal.show();
+            }
+
+            // Load SMS tab
+            $('#sms-tab').on('click', function() {
+                $('#participantsTable').css('display', 'none');
+                loadArchive();
+            });
+
+            // Load Mass tab
+            $('#mass-tab').on('click', function() {
+                $('#participantsTable').css('display', '');
+            });
+
+            loadParticipants();
+            loadReceivedSMS();
+            loadArchive(); // Charger l'archive au démarrage pour mettre à jour le badge
+        }
+    </script>
+</body>
+</html>

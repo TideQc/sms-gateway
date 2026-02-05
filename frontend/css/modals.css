@@ -1,0 +1,137 @@
+/* ==========================================
+   MODAL & DIALOG STYLES
+   ========================================== */
+
+.modal-content { 
+    background-color: #1e1e1e; 
+    border: 1px solid #444; 
+}
+
+.modal-title { 
+    color: #fff; 
+}
+
+.modal-header { 
+    padding: 1rem; 
+}
+
+.modal-body { 
+    padding: 1rem; 
+    max-height: 70vh; 
+    overflow-y: auto; 
+}
+
+.modal-body .table { 
+    font-size: 1rem; 
+}
+
+.modal-body .table th, 
+.modal-body .table td { 
+    padding: 10px 8px !important; 
+}
+
+.btn-close { 
+    width: 1.8rem; 
+    height: 1.8rem; 
+}
+
+.modal-dialog { 
+    margin: 10px auto; 
+}
+
+.modal-dialog.modal-dialog-centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.modal-content { 
+    border-radius: 8px; 
+}
+
+#historyTitle { 
+    color: #31a651; 
+    font-weight: bold; 
+}
+
+.text-secondary, 
+.manualTitle { 
+    color: #31a651 !important; 
+}
+
+.text-muted { 
+    color: #999 !important; 
+}
+
+/* Manual panel */
+#manual-panel .card {
+    background-color: #151515; 
+    border: 1px solid #222; 
+    border-radius: 12px; 
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex: 1;
+}
+
+#manual-panel .card label,
+#manual-panel .card #manualNumbers {
+    flex-shrink: 0;
+}
+
+#manual-panel .card #manualStatus {
+    flex: 1;
+    overflow-y: auto;
+}
+
+#manualStatus { 
+    background: #101010; 
+    font-family: monospace; 
+    font-size: 0.85rem; 
+    border: 1px solid #222; 
+    color: #eee; 
+}
+
+/* Filters modal */
+#filtersContainer {
+    position: absolute;
+    top: 0;
+    left: 15px;
+    right: 15px;
+    max-height: calc(100vh - 150px);
+    overflow-y: auto;
+    background-color: #151515;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 65px 15px 15px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.filter-btn { 
+    border-color: #31a651 !important; 
+    color: #31a651 !important; 
+    border-radius: 20px; 
+    font-size: 0.75rem; 
+    padding: 3px 12px; 
+}
+
+.filter-btn.active { 
+    background-color: #31a651 !important; 
+    color: #121212 !important; 
+}
+
+.filter-label { 
+    color: #31a651; 
+    font-weight: 600; 
+    font-size: 0.8rem; 
+    text-transform: uppercase; 
+    margin-bottom: 5px; 
+    display: block; 
+}
+
+#filtersModal {
+    overflow: hidden;
+}

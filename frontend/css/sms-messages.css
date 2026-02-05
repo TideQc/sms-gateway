@@ -1,0 +1,244 @@
+/* ==========================================
+   SMS MESSAGES & CONVERSATIONS
+   ========================================== */
+
+/* SMS Panel */
+#sms-panel > .card {
+    background-color: #151515; 
+    border: 1px solid #222; 
+    border-radius: 12px; 
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex: 1;
+}
+
+#sms-panel > .card #archiveSearch {
+    flex-shrink: 0;
+}
+
+#sms-panel > .card #archiveContactsList {
+    flex: 1;
+    overflow-y: visible;
+    max-height: none !important;
+    min-height: 0;
+    padding-bottom: 90px;
+}
+
+#archiveContactsList .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+#archiveContactsList div[id^="messages-"] {
+    flex: 1;
+    overflow-y: auto;
+    max-height: calc(100vh - 340px) !important;
+}
+
+#receivedSMSList { 
+    overflow: hidden; 
+}
+
+/* Unread SMS badge */
+.sms-unread-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, #ff4444, #ff8844);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    font-weight: bold;
+    margin-left: 4px;
+    animation: pulse-unread 2s infinite;
+    box-shadow: 0 0 10px rgba(255, 68, 68, 0.6);
+}
+
+@keyframes pulse-unread {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.sms-unread-icon { 
+    font-size: 1rem; 
+}
+
+/* SMS Message Card */
+.sms-message-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
+    border-left: 4px solid #ff8844;
+    padding: 14px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(255, 136, 68, 0.15);
+    transition: all 0.3s ease;
+}
+
+.sms-message-card:hover {
+    border-left-color: #ff4444;
+    box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3);
+    transform: translateX(4px);
+}
+
+.sms-message-card.read {
+    border-left-color: #31a651;
+    opacity: 0.7;
+}
+
+.sms-sender { 
+    color: #ff8844; 
+    font-weight: bold; 
+    font-size: 0.95rem; 
+}
+
+.sms-message-text { 
+    color: #e0e0e0; 
+    margin: 8px 0; 
+    line-height: 1.5; 
+    font-size: 0.95rem; 
+}
+
+.sms-date { 
+    color: #888; 
+    font-size: 0.8rem; 
+}
+
+.sms-actions { 
+    display: flex; 
+    gap: 8px; 
+    margin-top: 10px; 
+    flex-wrap: wrap; 
+}
+
+.sms-actions .btn-sm { 
+    padding: 4px 8px; 
+    font-size: 0.8rem; 
+}
+
+/* Progress bar */
+.progress { 
+    background-color: #1a1a1a; 
+    height: 12px; 
+    border-radius: 6px; 
+}
+
+.progress-bar { 
+    background-color: #31a651; 
+}
+
+/* Compose modal */
+#participantsTags { 
+    display: flex; 
+    flex-wrap: wrap; 
+    align-items: flex-start; 
+    gap: 6px; 
+    align-content: flex-start; 
+}
+
+#participantsSuggestions { 
+    background-color: #222; 
+    border: 1px solid #333; 
+    border-radius: 6px; 
+    max-height: 150px; 
+    overflow-y: auto; 
+    display: none; 
+    position: absolute; 
+    z-index: 1000; 
+}
+
+/* Reply/Quick SMS */
+.d-flex.gap-2.align-items-stretch {
+    border-radius: 20px;
+    background-color: #222;
+    padding: 8px;
+    align-items: center !important;
+}
+
+.d-flex.gap-2.align-items-stretch button {
+    border-radius: 16px !important;
+    padding: 8px 10px !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.d-flex.gap-2.align-items-stretch textarea {
+    border-radius: 16px !important;
+    padding: 10px 12px !important;
+    flex: 1 !important;
+    max-height: 60px !important;
+    min-height: 40px !important;
+    resize: none !important;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+/* Emoji picker */
+[id^="emoji-picker-"] {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(420px, calc(100% - 24px));
+    max-height: 260px;
+    overflow-y: auto;
+    background-color: #222;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    z-index: 3002;
+    display: none;
+    pointer-events: auto;
+}
+
+[id^="emoji-picker-"] > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+[id^="emoji-picker-"] button {
+    flex: 0 0 calc((100% - 7*6px)/8);
+    max-width: calc((100% - 7*6px)/8);
+    justify-content: center;
+    align-items: center;
+    padding: 6px 0 !important;
+}
+
+[id^="emoji-picker-"] .emoji-picker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    color: #e0e0e0;
+    font-weight: 600;
+}
+
+#emojiPickerBackdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+    display: none;
+}
+
+/* Floating compose button */
+#composeAction { 
+    position: fixed; 
+    bottom: 0; 
+    right: 0; 
+    margin: 1rem; 
+}
+
+#btnCompose { 
+    font-size: 1.1rem; 
+    padding: 0.75rem 1rem !important; 
+}

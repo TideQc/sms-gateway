@@ -1,0 +1,101 @@
+/* ==========================================
+   LOGIN STYLES
+   ========================================== */
+
+.login-container { 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    min-height: 100vh; 
+    background-color: #0a0a0a; 
+}
+
+.login-card { 
+    max-width: 400px; 
+    width: 100%; 
+    background-color: #151515; 
+    border: 1px solid #222; 
+    border-radius: 12px; 
+}
+
+.login-header { 
+    text-align: center; 
+    margin-bottom: 30px; 
+}
+
+.login-header img { 
+    height: 50px; 
+    margin-bottom: 15px; 
+}
+
+.login-header h1 { 
+    color: #31a651; 
+    font-size: 1.8rem; 
+    margin-bottom: 10px; 
+    margin-top: 0; 
+}
+
+.login-header p { 
+    color: #888; 
+    margin-bottom: 0; 
+}
+
+.login-form .form-label { 
+    color: #31a651; 
+    font-weight: 600; 
+}
+
+.login-form .form-control { 
+    background-color: #1a1a1a; 
+    border: 1px solid #333; 
+    color: #fff; 
+    font-size: 16px; 
+}
+
+.login-form .form-control:focus { 
+    background-color: #222; 
+    border-color: #31a651; 
+    color: #fff; 
+    box-shadow: 0 0 0 0.25rem rgba(49, 166, 81, 0.25); 
+}
+
+.login-form .btn-login { 
+    background-color: #31a651; 
+    border: none; 
+    color: #0a0a0a; 
+    font-weight: bold; 
+    font-size: 1.1rem; 
+    padding: 0.75rem; 
+}
+
+.login-form .btn-login:hover { 
+    background-color: #288a43; 
+}
+
+.login-error { 
+    color: #dc3545; 
+    margin-top: 10px; 
+    text-align: center; 
+    font-size: 0.9rem; 
+}
+
+.login-loading { 
+    display: none; 
+    text-align: center; 
+    color: #31a651; 
+    margin-top: 10px; 
+}
+
+.user-info { 
+    color: #888; 
+    font-size: 0.9rem; 
+}
+
+.btn-logout { 
+    background-color: #dc3545 !important; 
+    border: none !important; 
+}
+
+.btn-logout:hover { 
+    background-color: #c82333 !important; 
+}

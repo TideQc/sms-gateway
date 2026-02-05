@@ -1,0 +1,222 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                   SMS GATEWAY FRONTEND - ARCHITECTURE                       ║
+║                         APRÈS CONSOLIDATION                                 ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+📦 STRUCTURE DES FICHIERS
+────────────────────────────────────────────────────────────────────────────
+
+index.html (52 lignes)
+├─ <div id="app"></div>  (point d'entrée unique)
+└─ Imports JS (dans cet ordre):
+
+    1. LIBRARIES (externes)
+    ├─ socket.io.min.js
+    ├─ jquery.min.js
+    ├─ bootstrap.min.js
+    ├─ dataTables.min.js
+    └─ dataTables.bootstrap5.js
+
+    2. CONFIGURATION & UTILITIES (dépendances de base)
+    ├─ config.js (0.71 KB)
+    │  └─ const CONFIG = { API_URL, STORAGE_KEYS, TIMEOUTS, COLORS, ... }
+    ├─ utils.js (2.45 KB)
+    │  └─ formatDateEST(), escapeHtml(), normalizePhone(), debounce(), ...
+    └─ notifications.js (3.02 KB)
+       └─ NotificationManager class + notificationManager instance
+
+    3. APPLICATION CORE
+    ├─ main.js (24.3 KB)
+    │  └─ class cpaSmsApp {
+    │     ├─ constructor(containerId)
+    │     ├─ init()
+    │     ├─ _initApi()      → this.api = { call(), login(), getParticipants(), ... }
+    │     ├─ _initUI()       → this.ui = { renderLogin(), renderApp(), ... }
+    │     ├─ _initLogin()    → this.login = { handleSubmit() }
+    │     ├─ _initSMS()      → this.sms = { loadReceived(), loadArchive() } (stubs)
+    │     ├─ _initParticipants() → this.participants = { load() } (stub)
+    │     ├─ _verifyToken()
+    │     ├─ _showLogin() / _showMainApp()
+    │     ├─ _initializeApp()
+    │     ├─ _setupBurgerMenu()
+    │     ├─ _checkPixelStatus()
+    │     ├─ _initializeWebSocket()
+    │     └─ _logout()
+    │
+    ├─ sms-module.js (15.57 KB)
+    │  └─ Object.assign(cpaSmsApp.prototype, {
+    │     ├─ loadReceivedSMS()     → Charger SMS reçus depuis API
+    │     ├─ loadArchive()         → Charger archive complète
+    │     ├─ _renderArchive()      → Rendu HTML archive (groupé par contact)
+    │     ├─ _toggleArchiveMessages() → Afficher/masquer conversation
+    │     ├─ _toggleEmojiPicker()  → Picker emojis
+    │     ├─ _addEmoji()           → Ajouter emoji au texte
+    │     └─ _sendQuickReply()     → Envoyer réponse (WebSocket)
+    │
+    └─ participants-module.js (8.78 KB)
+       └─ Object.assign(cpaSmsApp.prototype, {
+          ├─ loadParticipants()   → Charger depuis API et init DataTable
+          ├─ _updateParticipantsTags() → Mettre à jour tags sélection
+          ├─ _removeParticipantTag() → Retirer tag sélection
+          ├─ _generateFilters()   → Créer filtres (Parc, Type, Coach)
+          └─ _setupCheckboxHandlers() → Event listeners checkboxes
+
+    4. INITIALISATION (point d'entrée)
+    └─ app.js (0.19 KB)
+       └─ const app = new cpaSmsApp('#app');
+          app.init();
+
+
+🔄 FLUX D'EXÉCUTION AU DÉMARRAGE
+────────────────────────────────────────────────────────────────────────────
+
+1. Chargement HTML
+   ↓
+2. Exécution des scripts dans l'ordre:
+   - Libraries chargées (jQuery, Bootstrap, DataTables, Socket.io)
+   - CONFIG object créé et disponible globalement
+   - Fonctions utilitaires disponibles (formatDateEST, escapeHtml, etc.)
+   - NotificationManager initialisé
+   - Classe cpaSmsApp définie
+   - Extensions SMS et Participants ajoutées à cpaSmsApp.prototype
+   ↓
+3. app.js exécuté:
+   const app = new cpaSmsApp('#app');
+   app.init();
+   ↓
+4. Dans cpaSmsApp.init():
+   ├─ Initialiser modules (_initApi, _initUI, _initLogin, _initSMS, _initParticipants)
+   ├─ Vérifier si token existe
+   └─ Si token valide → _verifyToken() → _showMainApp() → _initializeApp()
+      Sinon → _showLogin()
+   ↓
+5. Dans _initializeApp():
+   ├─ _checkPixelStatus()
+   ├─ loadParticipants() → charge et affiche DataTable
+   ├─ loadReceivedSMS() → affiche SMS reçus
+   ├─ loadArchive() → charge et affiche archive groupée
+   └─ _initializeWebSocket() → écoute events en temps réel
+
+
+💬 APPELS API
+────────────────────────────────────────────────────────────────────────────
+
+Tous les appels API passent par this.api.call(endpoint, options):
+├─ /login
+├─ /verify-token
+├─ /participants
+├─ /unread-sms
+├─ /sent-messages-archive
+├─ /send-bulk
+├─ /mark-sms-read/:id
+├─ /mark-conversation-read
+├─ /pixel-status
+├─ /pixel/sync-unread-only
+└─ /pixel/sync-sms
+
+Tous inclus automatiquement dans Authorization header: Bearer TOKEN
+
+
+🎨 ÉTAT GLOBAL (cpaSmsApp.state)
+────────────────────────────────────────────────────────────────────────────
+
+{
+  user: string,                              // Nom utilisateur connecté
+  authToken: string,                         // JWT token
+  isLoggedIn: boolean,                       // État connexion
+  selectedParticipants: {id: {name, phone}}, // Sélection pour envoi SMS
+  allParticipants: [],                       // Cache participants
+  smsQuickReplyCallbacks: {callbackId: fn},  // Callbacks réponses rapides
+  dataTable: DataTable,                      // Instance DataTable
+  socket: Socket,                            // Connection Socket.io
+  filters: {parc, type, coach},              // Filtres actifs
+  openConversation: string                   // Conversation ouverte
+}
+
+
+📡 WEBSOCKET EVENTS
+────────────────────────────────────────────────────────────────────────────
+
+Reçus:
+├─ 'progress' → Mise à jour barre progression envoi SMS
+├─ 'finish' → Envoi SMS terminé
+├─ 'sms-sent' → Réponse rapide envoyée (via callback)
+└─ 'new-sms' → Nouveau SMS reçu
+
+Envoyés:
+└─ 'send-sms-quick' → Envoyer réponse rapide
+
+
+🎯 DOMAINES DE RESPONSABILITÉ
+────────────────────────────────────────────────────────────────────────────
+
+config.js
+└─ Source unique pour CONFIG (API_URL, COLORS, TIMEOUTS)
+
+utils.js
+└─ Fonctions utilitaires (formatage, échappement, normalisation)
+
+notifications.js
+└─ Système notifications (toast messages)
+
+main.js (cpaSmsApp class)
+├─ Authentification (login, token, logout)
+├─ Orchestration (init, _initializeApp)
+├─ UI rendering (renderLogin, renderApp)
+├─ API wrapper (tous les endpoints)
+├─ WebSocket setup
+└─ Menu/Status UI
+
+sms-module.js (extensions cpaSmsApp)
+├─ Charger SMS reçus
+├─ Afficher/gérer archive
+├─ Emojis picker
+└─ Envoyer réponses rapides
+
+participants-module.js (extensions cpaSmsApp)
+├─ Charger participants
+├─ Initialiser DataTable
+├─ Gérer sélection (checkboxes)
+└─ Gérer filtres
+
+
+✅ VALIDATIONS EFFECTUÉES
+────────────────────────────────────────────────────────────────────────────
+
+[x] Aucun code dupliqué entre fichiers
+[x] Dépendances claires et hiérarchisées
+[x] Pas de hardcoded URLs (CONFIG.API_URL)
+[x] Syntaxe JavaScript validée
+[x] Ordre des imports critique respecté
+[x] Module SMS complètement implémenté
+[x] Module participants complètement implémenté
+[x] Notifications système en place
+[x] Gestion d'erreurs
+[x] CSS organisées par domaine (16 fichiers)
+[x] Backup main.js.bak créé
+
+
+🚀 POUR DÉMARRER LE FRONTEND
+────────────────────────────────────────────────────────────────────────────
+
+1. Assurez-vous que le backend est accessible à CONFIG.API_URL
+2. Ouvrez index.html dans un navigateur
+3. Loggez-vous avec vos credentials
+4. Le système charger automatiquement:
+   - Liste des participants (DataTable)
+   - SMS reçus
+   - Archive des conversations
+5. Les WebSockets se connecteront automatiquement
+
+
+⚠️ NOTES IMPORTANTES
+────────────────────────────────────────────────────────────────────────────
+
+- CONFIG est un object global (pas de import/export, compatible navigateur)
+- NotificationManager est une instance globale (notificationManager)
+- cpaSmsApp est une classe globale
+- Tous les modules partagent le même this (même instance)
+- Les extensions SMS et participants utilisent Object.assign pour ajouter des methods
+- Les fonctions utils (formatDateEST, escapeHtml, etc.) sont globales
+- jQuery est utilisé pour DOM queries légères
+- DataTables est initialié avec configuration optimale (scrolling, pagination)

@@ -1,0 +1,52 @@
+/* ==========================================
+   CUSTOM CHECKBOX STYLES
+   ========================================== */
+
+input[type="checkbox"],
+input[type="checkbox"].user-check,
+.form-check-input {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    width: 20px !important;
+    height: 20px !important;
+    border: 2px solid #31a651 !important;
+    border-radius: 4px !important;
+    background-color: transparent !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    position: relative !important;
+}
+
+input[type="checkbox"]:hover,
+input[type="checkbox"].user-check:hover,
+.form-check-input:hover {
+    border-color: #288a43 !important;
+    box-shadow: 0 0 8px rgba(49, 166, 81, 0.3) !important;
+}
+
+input[type="checkbox"]:checked,
+input[type="checkbox"].user-check:checked,
+.form-check-input:checked {
+    background-color: #31a651 !important;
+    border-color: #31a651 !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%230a0a0a'%3E%3Cpath d='M12.207 4.793a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L6.5 9.086l4.293-4.293a1 1 0 0 1 1.414 0z'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: 14px !important;
+}
+
+input[type="checkbox"]:checked:hover,
+input[type="checkbox"].user-check:checked:hover,
+.form-check-input:checked:hover {
+    background-color: #288a43 !important;
+    border-color: #288a43 !important;
+    box-shadow: 0 0 12px rgba(49, 166, 81, 0.5) !important;
+}
+
+input[type="checkbox"]:focus,
+input[type="checkbox"].user-check:focus,
+.form-check-input:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(49, 166, 81, 0.15) !important;
+}

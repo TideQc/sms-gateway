@@ -1,0 +1,49 @@
+# Environment variables (all directories)
+.env
+*.env
+.env.local
+.env.*.local
+**/.env
+**/backend/.env
+
+# Node modules
+node_modules/
+backend/node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Docker
+docker-compose.override.yml
+
+# Database dumps
+*.sql.backup
+backup-*.sql
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Build files
+dist/
+build/
+
+# CSV imports (optionnel, à ajuster selon besoin)
+# *.csv

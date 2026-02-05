@@ -1,0 +1,222 @@
+/* =============================================
+   ADDITIONS & MISSING STYLES FROM OLD VERSION
+   ============================================= */
+
+/* Navigation Link Underline Effect */
+.nav-link { color: #888 !important; border: none !important; position: relative; transition: color 0.3s ease; }
+.nav-link::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 3px; background-color: #31a651; transition: width 0.3s ease; }
+.nav-link:hover::after { width: 100%; }
+.nav-link.active { background-color: transparent !important; color: #31a651 !important; border-bottom: none !important; }
+.nav-link.active::after { width: 100%; }
+
+/* Database Panel Layout */
+#mass-panel { 
+    height: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    overflow: hidden;
+}
+#mass-panel > .nav-tabs { flex-shrink: 0; margin-bottom: 0; }
+#mass-panel > .tab-content { 
+    flex: 1;
+    height: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+#mass-panel > .tab-content > .tab-pane {
+    height: 100%;
+    display: none;
+}
+#mass-panel > .tab-content > .tab-pane.active {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Database Panel Content */
+#db-panel {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#db-panel > div[style*="padding"] {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#db-panel .card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+}
+
+#tabsContainer { margin-bottom: 0; }
+
+#db-panel .card .d-flex.align-items-center.justify-content-between,
+#db-panel .card #customSearch { flex-shrink: 0; }
+
+#db-panel .card #filtersContainer {
+    position: absolute;
+    top: 0;
+    left: 15px;
+    right: 15px;
+    max-height: calc(100vh - 150px);
+    overflow-y: auto;
+    background-color: #151515;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 65px 15px 15px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+#db-panel .card .dataTables_wrapper {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#db-panel .card .dataTables_scroll {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+#db-panel .card .dataTables_scrollBody {
+    max-height: none !important;
+}
+
+#db-panel .card .dataTables_info,
+#db-panel .card .dataTables_paginate {
+    flex-shrink: 0;
+    margin-top: 10px;
+    padding-bottom: 10px;
+}
+
+/* Manual Panel */
+#manual-panel .card label,
+#manual-panel .card #manualNumbers { flex-shrink: 0; }
+#manual-panel .card #manualStatus { flex: 1; overflow-y: auto; }
+
+/* SMS Panel */
+#sms-panel > .card #archiveSearch { flex-shrink: 0; }
+
+/* Card Header */
+.card-header { background-color: #1a1a1a; border-bottom: 1px solid #222; color: #31a651; font-weight: bold; border-radius: 0; transition: background-color 0.5s ease; }
+
+/* Text Colors */
+.text-secondary, .manualTitle { color: #31a651 !important; }
+.text-muted { color: #999 !important; }
+
+/* Pagination */
+.pagination .page-link { background-color: #1a1a1a; border-color: #333; color: #31a651; }
+.pagination .page-item.active .page-link { background-color: #31a651; border-color: #31a651; color: #0a0a0a !important; }
+
+/* Progress Bar */
+.progress { background-color: #1a1a1a; height: 12px; border-radius: 6px; }
+.progress-bar { background-color: #31a651; }
+
+/* DataTables Specific */
+thead th.dt-orderable::before { content: ''; }
+#participantsTable_info { color: #888 !important; }
+#participantsTable thead th { text-align: left !important; }
+
+/* Table Selection */
+tbody tr.selected { background-color: #1a3a1a !important; }
+tbody tr.selected:hover { background-color: #1f4620 !important; }
+tbody tr { cursor: pointer; }
+table.table.dataTable > tbody > tr.selected > * { box-shadow: inset 0 0 0 9999px #1f4620 !important; }
+
+/* Table Colors */
+.table-success { background-color: #1a3a1a !important; }
+.table-success td { background-color: #1a3a1a !important; color: #31a651 !important; }
+.table-danger { background-color: #3a1a1a !important; }
+.table-danger td { background-color: #3a1a1a !important; color: #dc3545 !important; }
+
+/* Modal Content */
+.modal-content { background-color: #1e1e1e; border: 1px solid #444; }
+.modal-title { color: #fff; }
+#historyTitle { color: #31a651; font-weight: bold; }
+
+/* Filter Buttons */
+.filter-btn { border-color: #31a651 !important; color: #31a651 !important; border-radius: 20px; font-size: 0.75rem; padding: 3px 12px; }
+.filter-btn.active { background-color: #31a651 !important; color: #121212 !important; }
+.filter-label { color: #31a651; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display: block; }
+
+/* SMS Badges */
+.sms-unread-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, #ff4444, #ff8844);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    font-weight: bold;
+    margin-left: 4px;
+    animation: pulse-unread 2s infinite;
+    box-shadow: 0 0 10px rgba(255, 68, 68, 0.6);
+}
+
+@keyframes pulse-unread {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.sms-unread-icon { font-size: 1rem; }
+
+/* SMS Messages */
+.sms-message-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
+    border-left: 4px solid #ff8844;
+    padding: 14px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(255, 136, 68, 0.15);
+    transition: all 0.3s ease;
+}
+
+.sms-message-card:hover {
+    border-left-color: #ff4444;
+    box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3);
+    transform: translateX(4px);
+}
+
+.sms-message-card.read {
+    border-left-color: #31a651;
+    opacity: 0.7;
+}
+
+.sms-sender { color: #ff8844; font-weight: bold; font-size: 0.95rem; }
+.sms-message-text { color: #e0e0e0; margin: 8px 0; line-height: 1.5; font-size: 0.95rem; }
+.sms-date { color: #888; font-size: 0.8rem; }
+.sms-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+#receivedSMSList { overflow: hidden; }
+.sms-actions .btn-sm { padding: 4px 8px; font-size: 0.8rem; }
+
+/* User Info in Burger Menu */
+.user-info { color: #888; font-size: 0.9rem; }
+
+/* Logout Button */
+.btn-logout { background-color: #dc3545 !important; border: none !important; }
+.btn-logout:hover { background-color: #c82333 !important; }
+
+/* Manual Status Area */
+#manualStatus { background: #101010; font-family: monospace; font-size: 0.85rem; border: 1px solid #222; color: #eee; }
+
+/* Notifications Container */
+#notificationContainer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
