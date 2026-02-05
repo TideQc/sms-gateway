@@ -141,6 +141,7 @@ L'application utilise un téléphone Android comme passerelle SMS physique via l
 
 ### Infrastructure
 - **Docker** + **Docker Compose**
+- **Node.js** - Runtime backend
 - **Nginx Alpine** - Serveur web frontend
 - **MariaDB 10.11** - Base de données relationnelle
 
