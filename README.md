@@ -195,12 +195,9 @@ PIXEL_PASS=password
 docker-compose up -d
 ```
 
-4. **Créer les tables de base de données**
-```bash
-docker exec -i sms_db mysql -uuser_sms -puser_password sms_gateway < database/unread-sms-migration.sql
-```
+La base de données et les tables seront créées automatiquement au premier démarrage grâce au script `database/init.sql`.
 
-5. **Créer un utilisateur administrateur**
+4. **Créer un utilisateur administrateur**
 ```bash
 cd backend
 node hash-password.js "VotreMotDePasse"
@@ -212,9 +209,9 @@ INSERT INTO Utilisateurs (Username, Password, Email, CreatedDate)
 VALUES ('admin', 'HASH_GENERE_ICI', 'admin@example.com', UNIX_TIMESTAMP());
 ```
 
-Ou utiliser le fichier `EXAMPLE_USERS.sql` fourni.
+Ou utiliser le fichier `docs/EXAMPLE_USERS.sql` fourni.
 
-6. **Accéder à l'application**
+5. **Accéder à l'application**
 ```
 http://localhost:4444
 ```
@@ -408,11 +405,7 @@ cardio_plein_air_smsgateway/
 │       └── config.js            # Configuration
 │
 ├── database/                     # Scripts SQL
-│   ├── unread-sms-migration.sql # Migration DB
-│   └── test-unread-sms.sql      # Tests
-│
-├── db/                          # Données
-│   └── ListesHiver26-ROS.csv    # Import participants
+│   └── init.sql                 # Initialisation DB (auto-exécuté)
 │
 ├── docker-compose.yml           # Orchestration Docker
 ├── .env                         # Variables d'environnement
