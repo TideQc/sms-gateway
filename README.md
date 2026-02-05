@@ -419,9 +419,7 @@ cardio_plein_air_smsgateway/
 ├── .env.example                 # Template .env
 │
 └── docs/                        # Documentation
-    ├── AUTH_QUICK_START.md      # Guide authentification rapide
-    ├── AUTHENTICATION_GUIDE.md  # Guide complet sécurité
-    ├── SETUP_AUTHENTICATION.md  # Setup technique auth
+    ├── AUTHENTICATION_GUIDE.md  # Guide authentification et JWT
     ├── PIXEL_SMS_SYNC_GUIDE.md  # Synchronisation SMS Android
     ├── GUIDE_UTILISATION.md     # Guide d'utilisation
     └── EXAMPLE_USERS.sql        # Scripts SQL exemples
@@ -463,10 +461,8 @@ cardio_plein_air_smsgateway/
 
 | Document | Description |
 |----------|-------------|
-| [AUTH_QUICK_START.md](docs/AUTH_QUICK_START.md) | Guide rapide de configuration de l'authentification |
-| [AUTHENTICATION_GUIDE.md](docs/AUTHENTICATION_GUIDE.md) | Guide complet sur la sécurité et JWT |
-| [SETUP_AUTHENTICATION.md](docs/SETUP_AUTHENTICATION.md) | Instructions techniques détaillées pour l'auth |
-| [PIXEL_SMS_SYNC_GUIDE.md](docs/PIXEL_SMS_SYNC_GUIDE.md) | Configuration de la synchronisation SMS Android |
+| [AUTHENTICATION_GUIDE.md](docs/AUTHENTICATION_GUIDE.md) | Guide complet authentification et sécurité JWT |
+| [PIXEL_SMS_SYNC_GUIDE.md](docs/PIXEL_SMS_SYNC_GUIDE.md) | Configuration synchronisation SMS Android |
 | [GUIDE_UTILISATION.md](docs/GUIDE_UTILISATION.md) | Guide d'utilisation de l'application |
 | [EXAMPLE_USERS.sql](docs/EXAMPLE_USERS.sql) | Scripts SQL pour créer des utilisateurs |
 
