@@ -157,7 +157,7 @@ L'application utilise un téléphone Android comme passerelle SMS physique via l
 
 - Docker & Docker Compose
 - Téléphone Android avec SMS Gateway installé
-- Réseau local (backend et téléphone sur même réseau)
+- Connexion réseau (local ou Internet avec DynDNS)
 
 ### Étapes
 
@@ -227,8 +227,19 @@ http://localhost:4444
    - Port : `8080`
    - Authentification : Basic Auth
    - Créer un utilisateur/mot de passe
-3. Obtenir l'adresse IP locale du téléphone (Paramètres → À propos)
-4. S'assurer que le téléphone est sur le même réseau que le serveur
+3. **Configurer l'accès réseau** (2 options) :
+
+   **Option A - Réseau Local** (plus simple)
+   - Obtenir l'adresse IP locale du téléphone (Paramètres → À propos)
+   - S'assurer que le téléphone est sur le même réseau que le serveur
+   - Utiliser l'IP locale dans `.env` : `PIXEL_IP=192.168.1.100`
+
+   **Option B - Accès Internet** (recommandé pour accès distant) 🌐
+   - Installer une app **DynDNS** (DuckDNS, No-IP, etc.)
+   - Configurer un nom de domaine dynamique (ex: `mon-sms-gateway.duckdns.org`)
+   - Configurer le port forwarding sur votre routeur : `Port externe 8080 → Téléphone port 8080`
+   - Utiliser le domaine dans `.env` : `PIXEL_IP=mon-sms-gateway.duckdns.org`
+   - ✅ **Avantage** : Le backend peut être n'importe où sur Internet!
 
 ### Configuration Nginx (Production)
 
