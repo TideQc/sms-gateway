@@ -81,6 +81,8 @@ L'application utilise un téléphone Android comme passerelle SMS physique via l
 - Logs structurés JSON (backend)
 - Dashboard avec statistiques
 
+[↑ Retour au sommaire](#-table-des-matières)
+
 ---
 
 ## 🏗️ Architecture
@@ -119,6 +121,8 @@ L'application utilise un téléphone Android comme passerelle SMS physique via l
 └──────────────────────┘
 ```
 
+[↑ Retour au sommaire](#-table-des-matières)
+
 ---
 
 ## 🛠️ Technologies
@@ -150,6 +154,8 @@ L'application utilise un téléphone Android comme passerelle SMS physique via l
 ### Téléphone
 - **Android** (compatible avec la plupart des appareils)
 - **SMS Gateway App** - Passerelle SMS physique
+
+[↑ Retour au sommaire](#-table-des-matières)
 
 ---
 
@@ -218,6 +224,8 @@ Ou utiliser le fichier `docs/EXAMPLE_USERS.sql` fourni.
 http://localhost:4444
 ```
 
+[↑ Retour au sommaire](#-table-des-matières)
+
 ---
 
 ## ⚙️ Configuration
@@ -258,6 +266,8 @@ frontend:
     - ./nginx.conf:/etc/nginx/nginx.conf
     - ./ssl:/etc/nginx/ssl
 ```
+
+[↑ Retour au sommaire](#-table-des-matières)
 
 ---
 
@@ -305,6 +315,8 @@ frontend:
 **Synchronisation automatique :**
 - Les SMS sont synchronisés automatiquement si webhook configuré
 - Endpoint : `POST /pixel/incoming`
+
+[↑ Retour au sommaire](#-table-des-matières)
 
 ---
 
@@ -381,6 +393,8 @@ curl -X POST http://localhost:3000/send-sms-quick \
   -d '{"phone":"+15145551234","message":"Bonjour!"}'
 ```
 
+[↑ Retour au sommaire](#-table-des-matières)
+
 ---
 
 ## 📁 Structure du Projet
@@ -431,6 +445,8 @@ cardio_plein_air_smsgateway/
     └── EXAMPLE_USERS.sql        # Scripts SQL exemples
 ```
 
+[↑ Retour au sommaire](#-table-des-matières)
+
 ---
 
 ## 🔐 Sécurité
@@ -459,6 +475,8 @@ cardio_plein_air_smsgateway/
 - [ ] Mettre en place des backups automatiques DB
 - [ ] Limiter les tentatives de login (rate limiting)
 
+[↑ Retour au sommaire](#-table-des-matières)
+
 ---
 
 ## 📚 Documentation
@@ -486,7 +504,7 @@ L'application utilise une architecture **MVC modulaire** :
 - **Services** : `PixelSMSSync` pour communication avec Pixel
 - **Database** : Pool MySQL2 avec requêtes paramétrées
 - **WebSocket** : Socket.IO pour temps réel
-
+[↑ Retour au sommaire](#-table-des-matières)
 ---
 
 ## 🤝 Contribution
@@ -516,6 +534,8 @@ Utiliser les [GitHub Issues](https://github.com/votre-compte/cardio-plein-air-sm
 - Comportement attendu vs actuel
 - Logs/captures d'écran si pertinent
 
+[↑ Retour au sommaire](#-table-des-matières)
+
 ---
 
 ## 🧪 Tests
@@ -537,6 +557,8 @@ Ouvrir dans un navigateur avec DevTools et vérifier la console.
 curl http://PIXEL_IP:8080/messages \
   -u username:password
 ```
+
+[↑ Retour au sommaire](#-table-des-matières)
 
 ---
 
@@ -581,6 +603,8 @@ server {
 0 2 * * * docker exec sms_db mysqldump -uroot -p$ROOT_PASS sms_gateway > backup-$(date +\%Y\%m\%d).sql
 ```
 
+[↑ Retour au sommaire](#-table-des-matières)
+
 ---
 
 ## 📊 Performances
@@ -589,6 +613,8 @@ server {
 - **WebSocket** : Latence < 100ms pour notifications temps réel
 - **Database** : Pool de 10 connexions simultanées
 - **Responsive** : Optimisé mobile/tablet/desktop
+
+[↑ Retour au sommaire](#-table-des-matières)
 
 ---
 
@@ -620,17 +646,23 @@ docker-compose down -v
 docker-compose up -d
 ```
 
+[↑ Retour au sommaire](#-table-des-matières)
+
 ---
 
 ## 📝 License
 
 Ce projet est sous licence **MIT**. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
+[↑ Retour au sommaire](#-table-des-matières)
+
 ---
 
 ## 👥 Auteurs
 
 - **Michael Tétreault** - Développement et maintenance
+
+[↑ Retour au sommaire](#-table-des-matières)
 
 ---
 
@@ -641,6 +673,8 @@ Ce projet est sous licence **MIT**. Voir le fichier [LICENSE](LICENSE) pour plus
 - [Socket.IO](https://socket.io/) pour les WebSockets
 - [Bootstrap](https://getbootstrap.com/) pour le framework UI
 - [DataTables](https://datatables.net/) pour les tableaux interactifs
+
+[↑ Retour au sommaire](#-table-des-matières)
 
 ---
 
