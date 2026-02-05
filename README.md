@@ -235,11 +235,11 @@ http://localhost:4444
    - Utiliser l'IP locale dans `.env` : `PIXEL_IP=192.168.1.100`
 
    **Option B - Accès Internet** (recommandé pour accès distant) 🌐
-   - Installer une app **DynDNS** (DuckDNS, No-IP, etc.)
+   - Installer une app **DynDNS** (DuckDNS, No-IP, etc.) sur le téléphone
    - Configurer un nom de domaine dynamique (ex: `mon-sms-gateway.duckdns.org`)
    - Configurer le port forwarding sur votre routeur : `Port externe 8080 → Téléphone port 8080`
    - Utiliser le domaine dans `.env` : `PIXEL_IP=mon-sms-gateway.duckdns.org`
-   - ✅ **Avantage** : Le backend peut être n'importe où sur Internet!
+   - ✅ **Avantage** : Le téléphone reste accessible même si le backend est hébergé ailleurs!
 
 ### Configuration Nginx (Production)
 
