@@ -641,7 +641,7 @@ Ce projet est sous licence **MIT**. Voir le fichier [LICENSE](LICENSE) pour plus
 
 ## 👥 Auteurs
 
-- **Équipe Cardio Plein Air** - Développement et maintenance
+- **Michael Tétreault** - Développement et maintenance
 
 ---
 
@@ -659,6 +659,6 @@ Ce projet est sous licence **MIT**. Voir le fichier [LICENSE](LICENSE) pour plus
 
 **⭐ Si ce projet vous a été utile, n'hésitez pas à lui donner une étoile ! ⭐**
 
-Made with ❤️ by Cardio Plein Air Team
+Made with ❤️ by Michael Tétreault
 
 </div>
