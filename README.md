@@ -654,15 +654,6 @@ Ce projet est sous licence **MIT**. Voir le fichier [LICENSE](LICENSE) pour plus
 
 ---
 
-## 📞 Support
-
-Pour toute question ou support :
-- 📧 Email : support@cardio-plein-air.com
-- 📱 Issues : [GitHub Issues](https://github.com/votre-compte/cardio-plein-air-smsgateway/issues)
-- 📖 Wiki : [Documentation complète](https://github.com/votre-compte/cardio-plein-air-smsgateway/wiki)
-
----
-
 <div align="center">
 
 **⭐ Si ce projet vous a été utile, n'hésitez pas à lui donner une étoile ! ⭐**
