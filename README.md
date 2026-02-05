@@ -41,6 +41,8 @@
 
 L'application utilise un téléphone Android comme passerelle SMS physique via l'application SMS Gateway.
 
+[↑ Retour au sommaire](#-table-des-matières)
+
 ---
 
 ## ✨ Fonctionnalités
