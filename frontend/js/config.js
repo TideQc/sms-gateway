@@ -3,7 +3,7 @@
 // ==========================================
 
 const CONFIG = {
-    API_URL: "http://smscpasocket.mike.is-very-nice.org",
+    API_URL: "https://smscpasocket.mike.is-very-nice.org",
     STORAGE_KEYS: {
         AUTH_TOKEN: 'authToken',
         USERNAME: 'username'

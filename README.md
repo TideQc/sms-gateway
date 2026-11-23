@@ -196,6 +196,11 @@ PIXEL_IP=192.168.1.100
 PIXEL_PORT=8080
 PIXEL_USER=admin
 PIXEL_PASS=password
+PIXEL_AUTO_SYNC_INTERVAL_MS=15000
+PIXEL_INBOX_UNSUPPORTED_RETRY_MS=300000
+BULK_SMS_DELAY_MS=5000
+BULK_SMS_DEDUP_ENABLED=true
+BULK_SMS_DEDUP_LOOKBACK_HOURS=168
 ```
 
 3. **Démarrer les conteneurs Docker**
@@ -250,6 +255,27 @@ http://localhost:4444
    - Configurer le port forwarding sur votre routeur : `Port externe 8080 → Téléphone port 8080`
    - Utiliser le domaine dans `.env` : `PIXEL_IP=mon-sms-gateway.duckdns.org`
    - ✅ **Avantage** : Le téléphone reste accessible même si le backend est hébergé ailleurs!
+
+### Synchronisation temps réel des SMS reçus
+
+Quand au moins un client web est connecté, le backend lance automatiquement une synchronisation périodique des SMS non lus depuis le téléphone.
+
+Variable d'environnement associée :
+
+```env
+PIXEL_AUTO_SYNC_INTERVAL_MS=15000
+PIXEL_INBOX_UNSUPPORTED_RETRY_MS=300000
+BULK_SMS_DELAY_MS=5000
+```
+
+- Unité : millisecondes
+- Valeur par défaut si absente : `15000` (15 secondes)
+- Plus la valeur est basse, plus la mise à jour est rapide (mais plus il y a de requêtes vers le téléphone)
+- `PIXEL_INBOX_UNSUPPORTED_RETRY_MS` évite les boucles d'erreurs quand les endpoints inbox ne sont pas disponibles
+- Valeur par défaut : `300000` (5 minutes)
+- `BULK_SMS_DELAY_MS` définit le délai entre chaque SMS d'un envoi de masse
+- Valeur par défaut et minimum forcé : `5000` (5 secondes), pour éviter que SMS Gateway ne bloque les envois et demande une validation manuelle
+- Tous les envois de masse (peu importe l'onglet ou l'utilisateur) passent par une file d'attente unique côté serveur : un seul lot est traité à la fois, et l'état (`en cours`, `en attente`, progression) est diffusé à tous les clients connectés via `bulk-queue-status`
 
 ### Configuration Nginx (Production)
 

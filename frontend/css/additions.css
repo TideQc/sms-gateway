@@ -17,6 +17,7 @@
     overflow: hidden;
 }
 #mass-panel > .nav-tabs { flex-shrink: 0; margin-bottom: 0; }
+.nav-tabs.mb-3 { margin-bottom: 0 !important; }
 #mass-panel > .tab-content { 
     flex: 1;
     height: auto;
@@ -128,6 +129,37 @@ thead th.dt-orderable::before { content: ''; }
 #participantsTable_info { color: #888 !important; }
 #participantsTable thead th { text-align: left !important; }
 
+/* Monitoring logs table: keep Date sort arrows on the right */
+#monitoringLogsTable thead th:nth-child(2) {
+    text-align: left !important;
+    direction: ltr !important;
+    padding-right: 1.5rem !important;
+}
+
+#monitoringLogsTable thead th:nth-child(2) div.dt-column-header,
+#monitoringLogsTable thead th:nth-child(2).dt-type-date div.dt-column-header,
+#monitoringLogsTable thead th:nth-child(2) div.dt-column-footer,
+#monitoringLogsTable thead th:nth-child(2).dt-type-date div.dt-column-footer {
+    flex-direction: row !important;
+    justify-content: space-between !important;
+}
+
+#monitoringLogsTable thead th:nth-child(2) .dt-column-title {
+    float: left !important;
+}
+
+#monitoringLogsTable thead th:nth-child(2) .dt-column-order {
+    float: right !important;
+    margin-left: 6px !important;
+    margin-right: 0 !important;
+}
+
+#monitoringLogsTable thead th:nth-child(2) .dt-column-order::before,
+#monitoringLogsTable thead th:nth-child(2) .dt-column-order::after {
+    left: auto !important;
+    right: 0 !important;
+}
+
 /* Table Selection */
 tbody tr.selected { background-color: #1a3a1a !important; }
 tbody tr.selected:hover { background-color: #1f4620 !important; }
@@ -143,10 +175,85 @@ table.table.dataTable > tbody > tr.selected > * { box-shadow: inset 0 0 0 9999px
 /* Modal Content */
 .modal-content { background-color: #1e1e1e; border: 1px solid #444; }
 .modal-title { color: #fff; }
+.modal .card .card-title { color: #31a651; }
 #historyTitle { color: #31a651; font-weight: bold; }
+
+#adminManagementModal .card .card-body,
+#notificationRecipientsModal .card .card-body {
+    background-color: #161616;
+}
+
+#adminManagementModal .card,
+#notificationRecipientsModal .card {
+    border-color: #2f2f2f !important;
+}
+
+.modal .form-control,
+.modal .form-select,
+.modal textarea,
+.modal input[type="text"],
+.modal input[type="search"],
+.modal input[type="datetime-local"],
+.modal input[type="date"] {
+    background-color: #1a1a1a !important;
+    border-color: #333 !important;
+    color: #fff !important;
+}
+
+.modal .form-control:focus,
+.modal .form-select:focus,
+.modal textarea:focus,
+.modal input:focus {
+    background-color: #222 !important;
+    border-color: #31a651 !important;
+    color: #fff !important;
+    box-shadow: 0 0 0 0.2rem rgba(49, 166, 81, 0.2) !important;
+}
+
+.modal input:-webkit-autofill,
+.modal input:-webkit-autofill:hover,
+.modal input:-webkit-autofill:focus,
+.modal textarea:-webkit-autofill,
+.modal select:-webkit-autofill {
+    -webkit-text-fill-color: #fff !important;
+    -webkit-box-shadow: 0 0 0px 1000px #1a1a1a inset !important;
+    transition: background-color 9999s ease-in-out 0s;
+}
+
+#scheduledJobDate::-webkit-calendar-picker-indicator,
+#scheduledJobRecurrenceUntil::-webkit-calendar-picker-indicator {
+    opacity: 1;
+    filter: invert(56%) sepia(41%) saturate(694%) hue-rotate(84deg) brightness(96%) contrast(93%);
+}
+
+#scheduledJobDate,
+#scheduledJobRecurrenceUntil {
+    color-scheme: dark;
+    padding-right: 2rem;
+}
+
+@media (max-width: 768px) {
+    #scheduledJobDate,
+    #scheduledJobRecurrenceUntil {
+        padding-right: 2.25rem !important;
+        background-repeat: no-repeat;
+        background-position: right 0.7rem center;
+        background-size: 1rem 1rem;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2331a651' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E");
+    }
+
+    #scheduledJobDate::-webkit-calendar-picker-indicator,
+    #scheduledJobRecurrenceUntil::-webkit-calendar-picker-indicator {
+        opacity: 1;
+    }
+}
 
 /* Filter Buttons */
 .filter-btn { border-color: #31a651 !important; color: #31a651 !important; border-radius: 20px; font-size: 0.75rem; padding: 3px 12px; }
+.filter-btn:hover,
+.filter-btn:focus {
+    color: #ffffff !important;
+}
 .filter-btn.active { background-color: #31a651 !important; color: #121212 !important; }
 .filter-label { color: #31a651; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; display: block; }
 
@@ -216,7 +323,7 @@ table.table.dataTable > tbody > tr.selected > * { box-shadow: inset 0 0 0 9999px
 /* Notifications Container */
 #notificationContainer {
     position: fixed;
-    top: 20px;
+    top: 72px;
     right: 20px;
     z-index: 9999;
 }

@@ -75,6 +75,23 @@
         font-size: 1.2rem; 
         margin-bottom: 0 !important; 
     }
+
+    #mass-panel > .tab-content > .tab-pane#monitoring-panel.active {
+        display: block !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 70px !important;
+    }
+
+    #monitoring-panel #monitoringLogsContainer {
+        max-height: 40vh !important;
+        overflow: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #monitoring-panel #monitoringLogsContainer table {
+        min-width: 560px;
+    }
     
     .row { 
         margin-left: -5px; 
@@ -168,6 +185,34 @@
         font-size: 18px !important; 
         line-height: 1.5; 
     }
+
+    textarea::placeholder {
+        font-size: 0.82rem !important;
+    }
+
+    #scheduledJobTitle::placeholder,
+    #scheduledParticipantsSearch::placeholder,
+    #scheduledJobRecurrenceInterval::placeholder,
+    #scheduledJobRecurrenceUntil::placeholder {
+        font-size: 0.82rem !important;
+    }
+
+    #scheduledJobRecurrenceInterval,
+    #scheduledJobRecurrenceUntil {
+        font-size: 0.9rem !important;
+        padding: 0.45rem 0.65rem !important;
+        line-height: 1.25 !important;
+    }
+
+    #notificationRecipientsModal .form-control::placeholder {
+        font-size: 0.82rem !important;
+    }
+
+    #scheduledJobForm .scheduled-recurrence-help {
+        font-size: 0.72rem !important;
+        line-height: 1.2;
+        margin-top: 0.2rem !important;
+    }
     
     #smsBody { 
         height: 140px !important; 
@@ -202,6 +247,43 @@
     
     .btn-outline-success { 
         font-size: 0.95rem; 
+    }
+
+    #scheduledJobsContainer .scheduled-job-header {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    #scheduledJobsContainer .scheduled-job-content {
+        width: 100%;
+        min-width: 0;
+    }
+
+    #scheduledJobsContainer .scheduled-job-meta {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.25rem !important;
+        width: 100%;
+    }
+
+    #scheduledJobsContainer .scheduled-job-date,
+    #scheduledJobsContainer .scheduled-job-stats {
+        display: block;
+        width: 100%;
+        word-break: break-word;
+    }
+
+    #scheduledJobsContainer .scheduled-job-actions {
+        width: 100%;
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    #scheduledJobsContainer .scheduled-job-actions .btn {
+        width: auto !important;
+        flex: 1 1 0;
+        margin-bottom: 0 !important;
     }
     
     .nav-tabs { 
@@ -687,7 +769,9 @@
 .active-filters-container .badge {
     padding: 4px 8px;
     font-size: 0.75rem;
-    white-space: nowrap;
+    white-space: normal;
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 
 /* Mobile optimization for filters */

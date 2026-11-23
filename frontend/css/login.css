@@ -59,6 +59,31 @@
     box-shadow: 0 0 0 0.25rem rgba(49, 166, 81, 0.25); 
 }
 
+.login-password-group .login-password-toggle {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-left: 0;
+    color: #31a651;
+    font-size: 1rem;
+    line-height: 1;
+    width: auto !important;
+    min-width: 44px;
+    margin-bottom: 0 !important;
+    flex: 0 0 auto;
+}
+
+.login-password-group {
+    flex-wrap: nowrap !important;
+}
+
+.login-password-group .login-password-toggle:hover,
+.login-password-group .login-password-toggle:focus {
+    background-color: #222;
+    color: #31a651;
+    border-color: #31a651;
+    box-shadow: none;
+}
+
 .login-form .btn-login { 
     background-color: #31a651; 
     border: none; 

@@ -194,6 +194,56 @@ Object.assign(cpaSmsApp.prototype, {
     },
 
     /**
+     * Open compose modal with recipients loaded from phone numbers
+     */
+    openComposeWithPhones(cleanedPhones) {
+        const normalize = (phone) => {
+            let digits = String(phone || '').replace(/\D/g, '');
+            if (digits.length === 11 && digits.startsWith('1')) {
+                digits = digits.substring(1);
+            }
+            return digits.length === 10 ? digits : '';
+        };
+
+        const participantsByPhone = new Map();
+        (this.state.allParticipants || []).forEach(participant => {
+            const key = normalize(participant.phone);
+            if (key && !participantsByPhone.has(key)) {
+                participantsByPhone.set(key, participant);
+            }
+        });
+
+        this.state.selectedParticipants = {};
+
+        (cleanedPhones || []).forEach(phone => {
+            const normalized = normalize(phone);
+            if (!normalized) return;
+
+            const participant = participantsByPhone.get(normalized);
+            if (participant) {
+                this.state.selectedParticipants[String(participant.id)] = {
+                    name: participant.name,
+                    phone: participant.phone
+                };
+            } else {
+                const manualKey = `manual_${normalized}`;
+                this.state.selectedParticipants[manualKey] = {
+                    name: 'Numéro manuel',
+                    phone: `+1${normalized}`
+                };
+            }
+        });
+
+        this._updateParticipantsTags();
+
+        const composeModalEl = document.querySelector('#composeModal');
+        if (composeModalEl) {
+            const composeModal = bootstrap.Modal.getOrCreateInstance(composeModalEl);
+            composeModal.show();
+        }
+    },
+
+    /**
      * Generate filters from participant data
      */
     _generateFilters(data) {
@@ -288,7 +338,7 @@ Object.assign(cpaSmsApp.prototype, {
         }
         
         const modalHtml = `
-            <div class="modal fade" id="composeModal" tabindex="-1" aria-hidden="true">
+            <div class="modal fade" id="composeModal" tabindex="-1" aria-hidden="true" style="overflow: hidden;">
                 <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg">
                     <div class="modal-content" style="background-color: #1a1a1a; border: 1px solid #333;">
                         <div class="modal-header">
@@ -306,6 +356,7 @@ Object.assign(cpaSmsApp.prototype, {
                                 <label for="bulkMessage" class="form-label" style="color: #31a651; font-weight: 600;">Message:</label>
                                 <textarea id="bulkMessage" class="form-control" rows="6" style="background-color: #0a0a0a; border: 1px solid #333; color: #fff;" placeholder="Entrez votre message..."></textarea>
                                 <small class="text-muted d-block mt-2">Caractères: <span id="charCount">0</span>/160</small>
+                                <button type="button" id="bulkEmojiBtn" class="btn btn-outline-secondary btn-sm mt-2" title="Ajouter un emoji">😊 Emojis</button>
                             </div>
                             <div class="d-flex justify-content-between">
                                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
@@ -335,11 +386,64 @@ Object.assign(cpaSmsApp.prototype, {
     _setupComposeModalHandlers() {
         // Character counter
         const bulkMessage = document.querySelector('#bulkMessage');
+        const bulkEmojiBtn = document.querySelector('#bulkEmojiBtn');
+        const massEmojis = ['😀','😁','😂','😊','😉','😍','😘','😎','🤔','😢','😭','😡','👍','👎','👏','🙏','❤️','🔥','✅','❌','⚠️','📨','📞','🎉'];
         if (bulkMessage) {
             bulkMessage.addEventListener('keyup', () => {
                 const count = bulkMessage.value.length;
                 const charCount = document.querySelector('#charCount');
                 if (charCount) charCount.textContent = count;
+            });
+        }
+
+        let bulkEmojiPicker = document.querySelector('#bulkEmojiPickerFloating');
+        if (!bulkEmojiPicker) {
+            bulkEmojiPicker = document.createElement('div');
+            bulkEmojiPicker.id = 'bulkEmojiPickerFloating';
+            bulkEmojiPicker.style.cssText = 'display:none; position:fixed; z-index:1065; padding:10px; background-color:#222; border:1px solid #333; border-radius:8px; max-height:180px; overflow-y:auto; box-shadow:0 8px 24px rgba(0,0,0,0.35);';
+            document.body.appendChild(bulkEmojiPicker);
+        }
+
+        if (bulkEmojiPicker) {
+            bulkEmojiPicker.innerHTML = `
+                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                    ${massEmojis.map(emoji => `<button type="button" class="btn btn-sm btn-outline-light" data-emoji="${emoji}" style="font-size: 1.1rem; padding: 4px 8px;">${emoji}</button>`).join('')}
+                </div>
+            `;
+
+            bulkEmojiPicker.addEventListener('click', (event) => {
+                const emojiBtn = event.target.closest('[data-emoji]');
+                if (!emojiBtn || !bulkMessage) return;
+
+                bulkMessage.value += emojiBtn.getAttribute('data-emoji');
+                bulkMessage.dispatchEvent(new Event('keyup'));
+                bulkMessage.focus();
+            });
+        }
+
+        if (bulkEmojiBtn && bulkEmojiPicker) {
+            bulkEmojiBtn.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const isVisible = bulkEmojiPicker.style.display !== 'none';
+                if (isVisible) {
+                    bulkEmojiPicker.style.display = 'none';
+                    return;
+                }
+
+                bulkEmojiPicker.style.display = 'block';
+                const rect = bulkEmojiBtn.getBoundingClientRect();
+                const pickerHeight = Math.min(180, bulkEmojiPicker.offsetHeight || 180);
+                const pickerWidth = Math.min(420, bulkEmojiPicker.offsetWidth || 320);
+                const top = Math.max(10, rect.top - pickerHeight - 8);
+                const left = Math.max(10, Math.min(window.innerWidth - pickerWidth - 10, rect.left));
+                bulkEmojiPicker.style.top = `${top}px`;
+                bulkEmojiPicker.style.left = `${left}px`;
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!bulkEmojiPicker.contains(event.target) && event.target !== bulkEmojiBtn) {
+                    bulkEmojiPicker.style.display = 'none';
+                }
             });
         }
         
@@ -354,7 +458,7 @@ Object.assign(cpaSmsApp.prototype, {
         // Send button
         const sendBtn = document.querySelector('#sendBulkBtn');
         if (sendBtn) {
-            sendBtn.addEventListener('click', () => this._sendBulkMessage());
+            sendBtn.onclick = () => this._sendBulkMessage();
         }
     },
 
@@ -417,49 +521,236 @@ Object.assign(cpaSmsApp.prototype, {
     /**
      * Send bulk message
      */
-    async _sendBulkMessage() {
-        const ids = Object.keys(this.state.selectedParticipants);
-        if (ids.length === 0) {
+    async _sendBulkMessage(options = {}) {
+        if (this.state.bulkSendInFlight) {
+            return;
+        }
+
+        const retryRecipients = Array.isArray(options?.recipients) ? options.recipients : null;
+        const isRetryMode = retryRecipients && retryRecipients.length > 0;
+
+        const ids = isRetryMode ? [] : Object.keys(this.state.selectedParticipants);
+        if (!isRetryMode && ids.length === 0) {
             notificationManager.error('Aucun participant sélectionné');
             return;
         }
-        
-        const message = document.querySelector('#bulkMessage')?.value?.trim();
+
+        const message = String(options?.message || document.querySelector('#bulkMessage')?.value || '').trim();
         if (!message) {
             notificationManager.error('Veuillez entrer un message');
             return;
         }
-        
-        // Demander confirmation AVANT d'envoyer
-        const confirmMessage = `Envoyer à ${ids.length} personne(s) ?\n\nMessage : ${message}`;
-        if (!confirm(confirmMessage)) {
+
+        const totalTargets = isRetryMode ? retryRecipients.length : ids.length;
+        if (totalTargets === 0) {
+            notificationManager.error('Aucun destinataire à relancer');
             return;
         }
-        
+
+        // Demander confirmation AVANT d'envoyer (sauf relance déjà confirmée)
+        if (!options?.skipConfirm) {
+            const confirmMessage = isRetryMode
+                ? `Relancer l'envoi pour ${totalTargets} destinataire(s) en échec ?\n\nMessage : ${message}`
+                : `Envoyer à ${totalTargets} personne(s) ?\n\nMessage : ${message}`;
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+        }
+
         try {
             const sendBtn = document.querySelector('#sendBulkBtn');
             const progressDiv = document.querySelector('#bulkSendProgress');
-            
+            const progressBar = document.querySelector('#progressBar');
+            const progressText = document.querySelector('#progressText');
+
+            if (!sendBtn || !progressDiv) {
+                notificationManager.error('UI d\'envoi indisponible');
+                return;
+            }
+
+            this.state.bulkSendInFlight = true;
+
             sendBtn.disabled = true;
             progressDiv.style.display = 'block';
-            
+            if (progressBar) {
+                progressBar.style.width = '0%';
+                progressBar.textContent = '0%';
+            }
+            if (progressText) {
+                progressText.textContent = isRetryMode
+                    ? `Préparation de la relance... (0/${totalTargets})`
+                    : `Préparation de l'envoi... (0/${totalTargets})`;
+            }
+
+            const socketRecipients = isRetryMode
+                ? retryRecipients.map((recipient) => {
+                    const parsedId = parseInt(recipient?.participantId, 10);
+                    const participantId = Number.isNaN(parsedId) ? null : parsedId;
+                    const payload = {
+                        name: recipient?.name || null
+                    };
+
+                    if (participantId != null) {
+                        payload.participantId = participantId;
+                    }
+
+                    if (recipient?.phone) {
+                        payload.phone = recipient.phone;
+                    }
+
+                    return payload;
+                })
+                : ids.map(id => {
+                    const participant = this.state.selectedParticipants[id] || {};
+                    if (String(id).startsWith('manual_')) {
+                        return {
+                            phone: participant.phone || '',
+                            name: participant.name || null
+                        };
+                    }
+
+                    const parsedId = parseInt(id, 10);
+                    if (!Number.isNaN(parsedId)) {
+                        return {
+                            participantId: parsedId,
+                            name: participant.name || null
+                        };
+                    }
+
+                    return {
+                        participantId: id,
+                        name: participant.name || null
+                    };
+                });
+
             // Emit bulk send via WebSocket
             const callbackId = `bulk-${Date.now()}`;
+            let onBulkProgress = null;
+            let lastProgressUiUpdateAt = 0;
+
+            try {
+                sessionStorage.setItem('bulkSendPending', JSON.stringify({
+                    callbackId,
+                    total: totalTargets,
+                    startedAt: Date.now()
+                }));
+            } catch (err) {
+                console.warn('Unable to persist bulk send pending state:', err);
+            }
+
+            const cleanupBulkProgressListener = () => {
+                if (onBulkProgress && this.state.socket && typeof this.state.socket.off === 'function') {
+                    this.state.socket.off('bulk-sms-progress', onBulkProgress);
+                    onBulkProgress = null;
+                }
+            };
+
+            onBulkProgress = (eventData = {}) => {
+                if (eventData.callbackId !== callbackId) return;
+
+                const total = Number(eventData.total || totalTargets || 0);
+                const current = Math.min(Number(eventData.current || 0), total || 0);
+                const success = Number(eventData.successCount || 0);
+                const failed = Number(eventData.failCount || 0);
+                const skipped = Number(eventData.skippedCount || 0);
+                const percent = total > 0 ? Math.round((current / total) * 100) : 0;
+
+                const now = Date.now();
+                const forceUpdate = current >= total;
+                if (!forceUpdate && (now - lastProgressUiUpdateAt) < 250) {
+                    return;
+                }
+                lastProgressUiUpdateAt = now;
+
+                if (progressBar) {
+                    progressBar.style.width = `${percent}%`;
+                    progressBar.textContent = `${percent}%`;
+                }
+                if (progressText) {
+                    const prefix = isRetryMode ? 'Relance en cours...' : 'Envoi en cours...';
+                    progressText.textContent = `${prefix} (${current}/${total}) • Succès: ${success} • Ignorés: ${skipped} • Erreurs: ${failed}`;
+                }
+            };
+
+            this.state.socket.on('bulk-sms-progress', onBulkProgress);
+
             this.state.smsQuickReplyCallbacks[callbackId] = (result) => {
+                cleanupBulkProgressListener();
                 progressDiv.style.display = 'none';
                 sendBtn.disabled = false;
-                
-                if (result.success || result.failCount === 0) {
-                    notificationManager.success(`${result.successCount}/${result.total} messages envoyés avec succès!`);
-                    // Reset form and close modal
-                    document.querySelector('#bulkMessage').value = '';
-                    document.querySelector('#charCount').textContent = '0';
-                    this.state.selectedParticipants = {};
-                    this._updateParticipantsTags();
-                    bootstrap.Modal.getInstance(document.querySelector('#composeModal'))?.hide();
-                } else if (result.failCount > 0) {
-                    const msg = `${result.successCount}/${result.total} messages envoyés. ${result.failCount} erreur(s).`;
-                    notificationManager.warning(msg);
+                this.state.bulkSendInFlight = false;
+                try {
+                    sessionStorage.removeItem('bulkSendPending');
+                } catch (err) {
+                    console.warn('Unable to clear bulk send pending state:', err);
+                }
+
+                const successCount = Number(result.successCount || 0);
+                const failCount = Number(result.failCount || 0);
+                const skippedCount = Number(result.skippedCount || 0);
+                const totalCount = Number(result.total || totalTargets || 0);
+
+                if (skippedCount > 0) {
+                    notificationManager.info(`${skippedCount} message(s) ignoré(s) (déjà envoyés récemment).`);
+                }
+
+                if (successCount > 0) {
+                    if (typeof this._scheduleArchiveRefresh === 'function') {
+                        this._scheduleArchiveRefresh();
+                    } else {
+                        this.loadArchive().catch(err => console.error('Error refreshing archive after websocket bulk send:', err));
+                    }
+                }
+
+                if (result.success || failCount === 0) {
+                    if (skippedCount > 0) {
+                        const processedCount = successCount + skippedCount;
+                        notificationManager.success(`${processedCount}/${totalCount} traités. ${successCount} envoyés, ${skippedCount} déjà envoyés ignorés.`);
+                    } else {
+                        notificationManager.success(`${successCount}/${totalCount} messages envoyés avec succès!`);
+                    }
+
+                    if (!isRetryMode) {
+                        // Reset form and close modal only on initial send
+                        document.querySelector('#bulkMessage').value = '';
+                        document.querySelector('#charCount').textContent = '0';
+                        this.state.selectedParticipants = {};
+                        this._updateParticipantsTags();
+                        bootstrap.Modal.getInstance(document.querySelector('#composeModal'))?.hide();
+                    }
+                } else if (failCount > 0) {
+                    let msg = `${successCount}/${totalCount} messages envoyés. ${failCount} erreur(s).`;
+                    if (skippedCount > 0) {
+                        msg += ` ${skippedCount} déjà envoyés ignorés.`;
+                    }
+                    notificationManager.show(msg, 'warning');
+
+                    const retryableFailed = Array.isArray(result?.failedRecipients)
+                        ? result.failedRecipients.filter(r => (r?.participantId != null) || !!r?.phone)
+                        : [];
+
+                    if (retryableFailed.length > 0) {
+                        if (typeof notificationManager.showAction === 'function') {
+                            notificationManager.showAction(
+                                `Relance disponible pour ${retryableFailed.length} destinataire(s) en échec.`,
+                                'warning',
+                                'Relancer',
+                                () => {
+                                    this._sendBulkMessage({
+                                        recipients: retryableFailed,
+                                        message,
+                                        skipConfirm: true
+                                    });
+                                },
+                                15000,
+                                'Ignorer',
+                                () => {/* Just close notification, no-op */}
+                            );
+                        } else {
+                            notificationManager.info(`Relance disponible pour ${retryableFailed.length} destinataire(s) en échec.`);
+                        }
+                    }
+
                     if (result.errors) {
                         console.warn('Erreurs:', result.errors);
                     }
@@ -467,26 +758,36 @@ Object.assign(cpaSmsApp.prototype, {
                     notificationManager.error('Erreur lors de l\'envoi');
                 }
             };
-            
+
             this.state.socket.emit('bulk-sms', {
-                recipients: ids,
+                recipients: socketRecipients,
                 message: message,
                 callbackId: callbackId
             });
-            
-            // Timeout after 30s
+
+            // Timeout dynamique (envois bulk longs)
+            const timeoutMs = Math.max(30000, (totalTargets * 10000) + 30000);
             setTimeout(() => {
                 if (this.state.smsQuickReplyCallbacks[callbackId]) {
                     delete this.state.smsQuickReplyCallbacks[callbackId];
+                    cleanupBulkProgressListener();
                     progressDiv.style.display = 'none';
                     sendBtn.disabled = false;
+                    this.state.bulkSendInFlight = false;
+                    notificationManager.warning('Le serveur peut continuer l\'envoi même si cette page n\'attend plus la réponse.');
                     notificationManager.error('Délai d\'attente dépassé');
                 }
-            }, 30000);
-            
+            }, timeoutMs);
+
         } catch (err) {
             console.error('Error sending bulk message:', err);
             notificationManager.error('Erreur lors de l\'envoi');
+            this.state.bulkSendInFlight = false;
+            try {
+                sessionStorage.removeItem('bulkSendPending');
+            } catch (clearErr) {
+                console.warn('Unable to clear bulk send pending state after error:', clearErr);
+            }
             document.querySelector('#sendBulkBtn').disabled = false;
             document.querySelector('#bulkSendProgress').style.display = 'none';
         }

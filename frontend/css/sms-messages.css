@@ -3,6 +3,10 @@
    ========================================== */
 
 /* SMS Panel */
+#sms-panel {
+    overflow: auto;
+}
+
 #sms-panel > .card {
     background-color: #151515; 
     border: 1px solid #222; 
@@ -31,10 +35,98 @@
     flex-direction: column;
 }
 
+#archiveContactsList > .card.mb-3 {
+    margin-bottom: 0.5rem !important;
+}
+
+#archiveContactsList > .card.mb-3.archive-opened {
+    margin-top: 5px !important;
+}
+
+#archiveContactsList > .card.mb-3.archive-opened > .card-header {
+    border-bottom: 1px solid #2a2a2a;
+    box-shadow: 0 20px 36px -14px rgba(0, 0, 0, 0.95);
+}
+
+#archiveContactsList > .card.mb-3:last-child {
+    margin-bottom: 60px !important;
+}
+
+#archiveContactsList .card-header .d-flex.justify-content-between.align-items-center > div:first-child {
+    flex: 1;
+    min-width: 0;
+    margin-right: 10px;
+}
+
+#archiveContactsList .card-header .d-flex.justify-content-between.align-items-center > div:first-child br {
+    display: none;
+}
+
+#archiveContactsList .card-header .d-flex.justify-content-between.align-items-center > div:first-child strong,
+#archiveContactsList .card-header .d-flex.justify-content-between.align-items-center > div:first-child small {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+    line-height: 1.1;
+}
+
+#archiveContactsList .card-header .d-flex.justify-content-between.align-items-center > div:first-child small {
+    margin-top: 3px;
+}
+
+#archiveContactsList .card-header .text-end {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+#archiveContactsList .card-header .text-end small {
+    white-space: nowrap;
+}
+
+#archiveContactsList .card-header .archive-unread-corner {
+    position: absolute;
+    top: -10px;
+    right: 2px;
+    z-index: 2;
+}
+
+#archiveContactsList .card-header .archive-total-count,
+#archiveContactsList .card-header .archive-last-datetime {
+    display: block;
+    white-space: nowrap;
+    line-height: 1.2;
+}
+
+#archiveHeaderRow.archive-header-hidden {
+    display: none !important;
+}
+
+#archiveActionsMenuBtn {
+    border: none !important;
+    background: transparent !important;
+    color: #fff !important;
+    font-size: 1.6rem !important;
+    line-height: 1 !important;
+    padding: 0 6px !important;
+    min-width: auto !important;
+    box-shadow: none !important;
+}
+
+#archiveActionsMenuBtn:hover,
+#archiveActionsMenuBtn:focus,
+#archiveActionsMenuBtn:active {
+    border: none !important;
+    background: transparent !important;
+    color: #31a651 !important;
+    box-shadow: none !important;
+}
+
 #archiveContactsList div[id^="messages-"] {
     flex: 1;
     overflow-y: auto;
-    max-height: calc(100vh - 340px) !important;
+    max-height: calc(100vh - 353px) !important;
 }
 
 #receivedSMSList { 
@@ -152,15 +244,16 @@
 
 /* Reply/Quick SMS */
 .d-flex.gap-2.align-items-stretch {
-    border-radius: 20px;
+    border-radius: 0 !important;
     background-color: #222;
-    padding: 8px;
+    padding: 5px !important;
     align-items: center !important;
 }
 
 .d-flex.gap-2.align-items-stretch button {
     border-radius: 16px !important;
     padding: 8px 10px !important;
+    margin-bottom: 0 !important;
     min-width: 40px !important;
     height: 40px !important;
     display: flex;
@@ -178,6 +271,17 @@
     resize: none !important;
     font-size: 0.95rem;
     line-height: 1.4;
+}
+
+textarea[id^="reply-participant_"] {
+    font-size: 0.85rem !important;
+}
+
+[id^="quick-templates-"] .btn {
+    width: auto !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+    margin-bottom: 0 !important;
 }
 
 /* Emoji picker */
@@ -211,6 +315,20 @@
     justify-content: center;
     align-items: center;
     padding: 6px 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+    outline: none !important;
+}
+
+[id^="emoji-picker-"] button:hover,
+[id^="emoji-picker-"] button:focus,
+[id^="emoji-picker-"] button:active,
+[id^="emoji-picker-"] button.active {
+    border: none !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+    outline: none !important;
 }
 
 [id^="emoji-picker-"] .emoji-picker-header {
@@ -241,4 +359,70 @@
 #btnCompose { 
     font-size: 1.1rem; 
     padding: 0.75rem 1rem !important; 
+}
+
+@media (max-width: 768px) {
+    #sms-panel input::placeholder,
+    #sms-panel textarea::placeholder,
+    #sms-panel .form-control::placeholder {
+        font-size: 0.82rem !important;
+    }
+
+    #sms-panel > .card #archiveContactsList {
+        padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
+    }
+
+    #archiveContactsList .card-header .d-flex.justify-content-between.align-items-center {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto;
+        column-gap: 10px;
+        align-items: center !important;
+    }
+
+    #archiveContactsList .card-header .d-flex.justify-content-between.align-items-center > div:first-child {
+        margin-right: 0;
+        min-width: 0;
+    }
+
+    #archiveContactsList .card-header .d-flex.justify-content-between.align-items-center > div:first-child br {
+        display: none;
+    }
+
+    #archiveContactsList .card-header .d-flex.justify-content-between.align-items-center > div:first-child strong,
+    #archiveContactsList .card-header .d-flex.justify-content-between.align-items-center > div:first-child small {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.0;
+    }
+
+    #archiveContactsList .card-header .d-flex.justify-content-between.align-items-center > div:first-child small {
+        margin-top: 2px;
+    }
+
+    #archiveContactsList .card-header .text-end {
+        display: flex !important;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+        width: auto;
+        text-align: right !important;
+        margin-top: 0;
+        min-width: 0;
+        max-width: 42vw;
+    }
+
+    #archiveContactsList .card-header .text-end small {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
+        max-width: 150px;
+    }
+
+    #archiveContactsList .card-header .archive-unread-corner {
+        top: -8px;
+        right: 2px;
+    }
 }
